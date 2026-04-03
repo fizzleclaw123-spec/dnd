@@ -43,6 +43,7 @@ $prog = $stmt->fetch();
                     <p>Level: <?= $prog['level'] ?></p>
                     <p>XP: <?= $prog['xp'] ?></p>
                     <p>Skill Points: <?= $prog['skill_points'] ?></p>
+                    <a href="character_sheet.php" class="btn btn-warning mt-2">View Character Sheet</a>
                 </div>
             </div>
         </div>
