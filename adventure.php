@@ -18,22 +18,46 @@ $logs = $stmt->fetchAll();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adventure Log</title>
+    <!-- Use the same Bootstrap/CSS approach as Login/Register pages for consistency -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; overflow-x: hidden; margin: 0; padding: 0; }
-        .wrapper { display: flex; flex-direction: column; height: 100vh; }
-        .log-container { flex: 1; background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 15px; overflow-y: auto; margin: 10px; }
+        body { 
+            background: #1a1a1a; 
+            color: #d4af37; 
+            font-family: "Georgia", serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container { flex: 1; display: flex; flex-direction: column; }
+        .log-container { 
+            background: #2d2d2d; 
+            border: 3px solid #d4af37; 
+            border-radius: 15px; 
+            padding: 15px; 
+            flex-grow: 1;
+            overflow-y: auto; 
+            margin-bottom: 80px; /* Space for fixed form */
+        }
         .dm-text { color: #f8f9fa; margin-bottom: 1rem; line-height: 1.5; }
         .player-text { color: #d4af37; font-weight: bold; margin-bottom: 0.5rem; word-wrap: break-word; }
-        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 10px; }
-        .input-area { padding: 15px; background: #1a1a1a; border-top: 2px solid #d4af37; }
+        .input-area { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            padding: 15px; 
+            background: #1a1a1a; 
+            border-top: 2px solid #d4af37;
+        }
+        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <h2 class="text-center text-warning mt-2">Adventure Log</h2>
+    <div class="container py-3">
+        <h2 class="text-center text-warning">Adventure Log</h2>
         <div class="log-container" id="log">
             <?php if (empty($logs)): ?>
                 <p class="text-center">The adventure hasn't started yet.</p>
@@ -89,7 +113,6 @@ $logs = $stmt->fetchAll();
             utterance.lang = 'en-US';
             window.speechSynthesis.speak(utterance);
         }
-        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     </script>
 </body>
 </html>
