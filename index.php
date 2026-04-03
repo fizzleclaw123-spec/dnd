@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D&D Character Manager | Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         body { 
             background: #1a1a1a; 
@@ -45,7 +46,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">🔑 Password</label>
-                            <input type="password" class="form-control bg-dark text-white border-secondary" name="password" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control bg-dark text-white border-secondary" name="password" id="password" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">
+                                    <i class="bi bi-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-dnd w-100">Login</button>
                     </form>
@@ -54,5 +60,20 @@
             </div>
         </div>
     </div>
+    <script>
+        function togglePassword() {
+            const pw = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
+            if (pw.type === 'password') {
+                pw.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                pw.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    </script>
 </body>
 </html>
