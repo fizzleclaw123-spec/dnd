@@ -30,20 +30,40 @@ $prog = $stmt->fetch();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D&D Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background: #1a1a1a; 
+            color: #d4af37; 
+            font-family: "Georgia", serif; 
+            min-height: 100vh;
+        }
+        .dashboard-card { 
+            background: #2d2d2d; 
+            border: 3px solid #d4af37; 
+            border-radius: 15px; 
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; }
+    </style>
 </head>
 <body class="bg-dark text-light">
-    <div class="container mt-5">
-        <h1>Welcome, Adventurer!</h1>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card bg-secondary text-light p-3">
+    <div class="container py-4">
+        <h1 class="text-center text-warning mb-4">Welcome, Adventurer!</h1>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="dashboard-card">
                     <h3>Progression</h3>
-                    <p>Level: <?= $prog['level'] ?></p>
-                    <p>XP: <?= $prog['xp'] ?></p>
-                    <p>Skill Points: <?= $prog['skill_points'] ?></p>
-                    <a href="character_sheet.php" class="btn btn-warning mt-2">View Character Sheet</a>
+                    <p><strong>Level:</strong> <?= htmlspecialchars($prog['level']) ?></p>
+                    <p><strong>XP:</strong> <?= htmlspecialchars($prog['xp']) ?></p>
+                    <p><strong>Skill Points:</strong> <?= htmlspecialchars($prog['skill_points']) ?></p>
+                    <div class="d-grid gap-2">
+                        <a href="character_sheet.php" class="btn btn-warning">View Character Sheet</a>
+                        <a href="start_adventure.php" class="btn btn-primary">Start Adventure</a>
+                    </div>
                 </div>
             </div>
         </div>
