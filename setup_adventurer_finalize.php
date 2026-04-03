@@ -1,0 +1,19 @@
+<?php
+session_start();
+require 'db.php';
+
+$user_id = $_SESSION["user_id"];
+
+// Save skills
+foreach ($_SESSION["skills"] as $name => $level) {
+    if ($level > 0) {
+        $stmt = $pdo->prepare("INSERT INTO character_skills (user_id, skill_name, level) VALUES (?, ?, ?)");
+        $stmt->execute([$user_id, $name, $level]);
+    }
+}
+
+// Clean up session and redirect
+unset($_SESSION["skills"]);
+header("Location: dashboard.php");
+exit;
+?>

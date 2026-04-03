@@ -38,7 +38,7 @@
                         <div class="alert alert-info"><?= $_SESSION["message"]; unset($_SESSION["message"]); ?></div>
                     <?php endif; ?>
                     <p class="text-center text-light">Adventurer, enter your credentials to access your character sheet.</p>
-                    <form action="dashboard.php" method="POST">
+                    <form action="login_action.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label">👤 Email</label>
                             <input type="email" class="form-control bg-dark text-white border-secondary" name="email" required>
