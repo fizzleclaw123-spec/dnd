@@ -20,7 +20,6 @@ $logs = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adventure Log</title>
-    <!-- Use the same Bootstrap/CSS approach as Login/Register pages for consistency -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { 
@@ -39,9 +38,9 @@ $logs = $stmt->fetchAll();
             padding: 15px; 
             flex-grow: 1;
             overflow-y: auto; 
-            margin-bottom: 80px; /* Space for fixed form */
+            margin-bottom: 80px;
         }
-        .dm-text { color: #f8f9fa; margin-bottom: 1rem; line-height: 1.5; }
+        .dm-text { color: #f8f9fa; margin-bottom: 0.5rem; line-height: 1.5; }
         .player-text { color: #d4af37; font-weight: bold; margin-bottom: 0.5rem; word-wrap: break-word; }
         .input-area { 
             position: fixed; 
@@ -62,34 +61,43 @@ $logs = $stmt->fetchAll();
             <?php if (empty($logs)): ?>
                 <p class="text-center">The adventure hasn't started yet.</p>
             <?php else: ?>
-                <?php foreach ($logs as $log): ?>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                <?php 
+                $totalLogs = count($logs);
+                foreach ($logs as $index => $log): 
+                    $isLast = ($index === $totalLogs - 1);
+                ?>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
                         <p class="player-text mb-0">> <?= htmlspecialchars($log['player_action']) ?></p>
                         <button class="btn btn-sm btn-outline-warning" onclick="speakText(this, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $log['dm_narration']))) ?>`)">🔊 Listen</button>
                     </div>
-                    <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
-                    <hr class="border-secondary">
-                    <script>
-                        (function() {
-                            const rawText = `<?= htmlspecialchars_decode($log['dm_narration']) ?>`;
-                            const text = rawText.replace(/<br \/>/g, '\n');
-                            const element = document.getElementById('dm-text-<?= $log['id'] ?>');
-                            let i = 0;
-                            function type() {
-                                if (i < text.length) {
-                                    const char = text.charAt(i);
-                                    if (char === '\n') {
-                                        element.appendChild(document.createElement('br'));
-                                    } else {
-                                        element.appendChild(document.createTextNode(char));
+                    
+                    <?php if ($isLast): ?>
+                        <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
+                        <script>
+                            (function() {
+                                const rawText = `<?= htmlspecialchars_decode($log['dm_narration']) ?>`;
+                                const text = rawText.replace(/<br \/>/g, '\n');
+                                const element = document.getElementById('dm-text-<?= $log['id'] ?>');
+                                let i = 0;
+                                function type() {
+                                    if (i < text.length) {
+                                        const char = text.charAt(i);
+                                        if (char === '\n') {
+                                            element.appendChild(document.createElement('br'));
+                                        } else {
+                                            element.appendChild(document.createTextNode(char));
+                                        }
+                                        i++;
+                                        setTimeout(type, 15);
                                     }
-                                    i++;
-                                    setTimeout(type, 15);
                                 }
-                            }
-                            type();
-                        })();
-                    </script>
+                                type();
+                            })();
+                        </script>
+                    <?php else: ?>
+                        <p class="dm-text"><?= nl2br(htmlspecialchars($log['dm_narration'])) ?></p>
+                    <?php endif; ?>
+                    <hr class="border-secondary">
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
