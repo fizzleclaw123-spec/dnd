@@ -64,10 +64,10 @@ $prog = $stmt->fetch();
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title">Progression</h3>
-                <div class="d-flex justify-content-center mb-3">
-                    <span class="text-danger"><strong>Level:</strong> <?= htmlspecialchars($prog['level']) ?></span>
-                    <span class="text-danger"><strong>XP:</strong> <?= htmlspecialchars($prog['xp']) ?></span>
-                    <span class="text-danger"><strong>Skill Points:</strong> <?= htmlspecialchars($prog['skill_points']) ?></span>
+                <div class="d-flex flex-column mb-3">
+                    <p class="text-danger mb-1"><strong>Level:</strong> <?= htmlspecialchars($prog['level']) ?></p>
+                    <p class="text-danger mb-1"><strong>XP:</strong> <?= htmlspecialchars($prog['xp']) ?></p>
+                    <p class="text-danger mb-1"><strong>Skill Points:</strong> <?= htmlspecialchars($prog['skill_points']) ?></p>
                 </div>
                 <div class="mt-3">
                     <a href="character_sheet.php" class="btn btn-warning btn-lg btn-dnd">View Character Sheet</a>
