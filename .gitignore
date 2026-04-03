@@ -1,3 +1,5 @@
 dnd.db
 vendor/
 .env.php
+config.php
+dnd.db
