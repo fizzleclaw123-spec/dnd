@@ -9,20 +9,11 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = $_SESSION["user_id"];
 
-// Check if user has a fully created adventurer (with stats)
-$stmt = $pdo->prepare("SELECT id FROM adventurers WHERE user_id = ? AND name IS NOT NULL AND class IS NOT NULL AND strength IS NOT NULL");
-$stmt->execute([$user_id]);
-$adventurer = $stmt->fetch();
-
-if (!$adventurer) {
-    header("Location: setup_adventurer.php");
-    exit;
-}
-
-// Ensure progression row exists
+// Ensure exploration record exists
 $pdo->prepare("INSERT OR IGNORE INTO character_progression (user_id, skill_points) VALUES (?, 0)")->execute([$user_id]);
 
-$stmt = $pdo->prepare("SELECT * FROM character_progression WHERE user_id = ?");
+// Fetch progression data
+$stmt = $pdo->prepare("SELECT level, xp, skill_points FROM character_progression WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $prog = $stmt->fetch();
 ?>
@@ -38,32 +29,49 @@ $prog = $stmt->fetch();
             background: #1a1a1a; 
             color: #d4af37; 
             font-family: "Georgia", serif; 
-            min-height: 100vh;
+            margin: 0; 
+            min-height: 100vh; 
         }
-        .dashboard-card { 
+        .dashboard { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 2rem; 
+        }
+        .card { 
             background: #2d2d2d; 
             border: 3px solid #d4af37; 
             border-radius: 15px; 
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+            width: 100%; 
+            max-width: 400px; 
         }
-        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; }
+        .btn-dnd { 
+            background: #8b0000; 
+            color: white; 
+            border: 2px solid #5a0000; 
+            padding: 0.75rem 1.5rem; 
+            margin: 0.5rem 0; 
+        }
     </style>
 </head>
 <body class="bg-dark text-light">
-    <div class="container py-4">
-        <h1 class="text-center text-warning mb-4">Welcome, Adventurer!</h1>
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="dashboard-card">
-                    <h3>Progression</h3>
-                    <p><strong>Level:</strong> <?= htmlspecialchars($prog['level']) ?></p>
-                    <p><strong>XP:</strong> <?= htmlspecialchars($prog['xp']) ?></p>
-                    <p><strong>Skill Points:</strong> <?= htmlspecialchars($prog['skill_points']) ?></p>
-                    <div class="d-grid gap-2">
-                        <a href="character_sheet.php" class="btn btn-warning">View Character Sheet</a>
-                        <a href="start_adventure.php" class="btn btn-primary">Start Adventure</a>
-                    </div>
+    <div class="dashboard">
+        <h1 class="text-center text-warning mb-4 text-white">Welcome, Adventurer!</h1>
+
+        <!-- Progression Card -->
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">Progression</h3>
+                <div class="d-flex justify-content-center mb-3">
+                    <span class="text-danger"><strong>Level:</strong> <?= htmlspecialchars($prog['level']) ?></span>
+                    <span class="text-danger"><strong>XP:</strong> <?= htmlspecialchars($prog['xp']) ?></span>
+                    <span class="text-danger"><strong>Skill Points:</strong> <?= htmlspecialchars($prog['skill_points']) ?></span>
+                </div>
+                <div class="mt-3">
+                    <a href="character_sheet.php" class="btn btn-warning btn-lg btn-dnd">View Character Sheet</a>
+                    <a href="start_adventure.php" class="btn btn-primary btn-lg btn-dnd">Start Adventure</a>
                 </div>
             </div>
         </div>
