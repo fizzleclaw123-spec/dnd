@@ -63,9 +63,11 @@ $logs = $stmt->fetchAll();
                 <p class="text-center">The adventure hasn't started yet.</p>
             <?php else: ?>
                 <?php foreach ($logs as $log): ?>
-                    <p class="player-text">> <?= htmlspecialchars($log['player_action']) ?></p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="player-text mb-0">> <?= htmlspecialchars($log['player_action']) ?></p>
+                        <button class="btn btn-sm btn-outline-warning" onclick="speakText(this, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $log['dm_narration']))) ?>`)">🔊 Listen</button>
+                    </div>
                     <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
-                    <button class="btn btn-sm btn-outline-warning mb-2" onclick="speakText(this, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $log['dm_narration']))) ?>`)">🔊 Listen</button>
                     <hr class="border-secondary">
                     <script>
                         (function() {
