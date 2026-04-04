@@ -1,5 +1,14 @@
 <?php
 session_start();
+require 'db.php';
+
+$user_id = $_SESSION["user_id"];
+$stmt = $pdo->prepare("SELECT * FROM character_skills WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$existing_skills = [];
+while ($row = $stmt->fetch()) {
+    $existing_skills[$row['skill_name']] = $row['level'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,23 +23,26 @@ session_start();
         .skill-field { width: 60px; background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; text-align: center; font-size: 1.2rem; border-radius: 5px; }
         .btn-plus-minus { background: #d4af37; color: #1a1a1a; border: none; width: 35px; height: 35px; border-radius: 5px; font-weight: bold; font-size: 1.2rem; }
     </style>
+</head>
 <body>
     <div class="setup-card shadow-lg">
         <h2 class="text-center text-warning mb-3">Assign Skills</h2>
         <p class="text-center text-light mb-4 small">Points remaining: <span id="remaining" style="color: green;">40</span>.</p>
         <form action="setup_adventurer_skills_action.php" method="POST" id="skillsForm">
             <?php 
-            $skills = [
+            $skill_list = [
                 'Athletics', 'Intimidation', 'Tracking', 'Notice', 'Resilience',
                 'Persuasion', 'Deception', 'Arcana', 'Medicine', 'Investigation',
                 'Stealth', 'Acrobatics', 'Lockpicking', 'Pickpocketing', 'Gambling', 'Appraisal'
             ];
-            foreach ($skills as $skill): ?>
+            foreach ($skill_list as $skill): 
+                $val = $existing_skills[$skill] ?? 0;
+            ?>
                 <div class="mb-2 d-flex justify-content-between align-items-center">
                     <label class="form-label mb-0 small fw-bold"><?= $skill ?></label>
                     <div class="d-flex align-items-center">
                         <button type="button" class="btn-plus-minus me-2" onclick="changeSkill('<?= $skill ?>', -1)">-</button>
-                        <input type="text" name="skills[<?= $skill ?>]" id="skill-<?= $skill ?>" class="form-control skill-field" value="0" readonly required>
+                        <input type="text" name="skills[<?= $skill ?>]" id="skill-<?= $skill ?>" class="form-control skill-field" value="<?= $val ?>" readonly required>
                         <button type="button" class="btn-plus-minus ms-2" onclick="changeSkill('<?= $skill ?>', 1)">+</button>
                     </div>
                 </div>
@@ -69,8 +81,7 @@ session_start();
                 submitBtn.disabled = true;
             }
         }
-        
-        // Disable initially
-        submitBtn.disabled = true;
         update();
     </script>
+</body>
+</html>
