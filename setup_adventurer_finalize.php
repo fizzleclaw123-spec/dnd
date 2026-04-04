@@ -4,6 +4,10 @@ require 'db.php';
 
 $user_id = $_SESSION["user_id"];
 
+// Update adventurer status to complete
+$stmt = $pdo->prepare("UPDATE adventurers SET is_complete = 1 WHERE user_id = ?");
+$stmt->execute([$user_id]);
+
 // Save skills
 foreach ($_SESSION["skills"] as $name => $level) {
     if ($level > 0) {
