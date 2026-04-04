@@ -1,5 +1,21 @@
 <?php
 session_start();
+require 'db.php';
+
+$user_id = $_SESSION["user_id"];
+$stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$adv = $stmt->fetch();
+
+$current_stats = [
+    'Strength' => $adv['strength'] ?? 4,
+    'Perception' => $adv['perception'] ?? 4,
+    'Endurance' => $adv['endurance'] ?? 4,
+    'Charisma' => $adv['charisma'] ?? 4,
+    'Intelligence' => $adv['intelligence'] ?? 4,
+    'Agility' => $adv['agility'] ?? 4,
+    'Luck' => $adv['luck'] ?? 4
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,24 +30,24 @@ session_start();
         .stat-field { width: 60px; background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; text-align: center; font-size: 1.2rem; border-radius: 5px; }
         .btn-plus-minus { background: #d4af37; color: #1a1a1a; border: none; width: 40px; height: 40px; border-radius: 5px; font-weight: bold; font-size: 1.5rem; }
     </style>
+</head>
 <body>
     <div class="setup-card shadow-lg">
         <h2 class="text-center text-warning mb-3">Assign S.P.E.C.I.A.L. Stats</h2>
-        <p class="text-center text-light mb-4 small">Points remaining: <span id="remaining" style="color: red;">12</span> (Total: 40). Min 3, Max 10.</p>
+        <p class="text-center text-light mb-4 small">Points remaining: <span id="remaining" style="color: red;">0</span> (Total: 40). Min 3, Max 10.</p>
         <form action="setup_adventurer_stats_action.php" method="POST" id="statsForm">
             <?php 
-            $stats = ['Strength', 'Perception', 'Endurance', 'Charisma', 'Intelligence', 'Agility', 'Luck'];
-            foreach ($stats as $stat): ?>
+            foreach ($current_stats as $stat => $val): ?>
                 <div class="mb-3 d-flex justify-content-between align-items-center">
                     <label class="form-label mb-0 fw-bold"><?= $stat ?></label>
                     <div class="d-flex align-items-center">
                         <button type="button" class="btn-plus-minus me-2" onclick="changeStat('<?= $stat ?>', -1)">-</button>
-                        <input type="text" name="stats[<?= $stat ?>]" id="stat-<?= $stat ?>" class="form-control stat-field" value="4" readonly required>
+                        <input type="text" name="stats[<?= $stat ?>]" id="stat-<?= $stat ?>" class="form-control stat-field" value="<?= $val ?>" readonly required>
                         <button type="button" class="btn-plus-minus ms-2" onclick="changeStat('<?= $stat ?>', 1)">+</button>
                     </div>
                 </div>
             <?php endforeach; ?>
-            <button type="submit" class="btn btn-dnd w-100 fw-bold mt-4" id="submitBtn" disabled>Finalize Character</button>
+            <button type="submit" class="btn btn-dnd w-100 fw-bold mt-4" id="submitBtn">Finalize Character</button>
             <a href="setup_adventurer_class.php" class="btn btn-outline-secondary w-100 mt-2">Back</a>
         </form>
     </div>
