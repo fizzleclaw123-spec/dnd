@@ -10,18 +10,23 @@ if (!isset($_SESSION["user_id"])) {
 $user_id = $_SESSION["user_id"];
 
 // Check if adventurer exists AND is complete
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM adventurers WHERE user_id = ? AND is_complete = 1");
+$stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
 $stmt->execute([$user_id]);
-if ($stmt->fetchColumn() == 0) {
-    // If adventurer exists but is incomplete, redirect to the appropriate step
-    $stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $adventurer = $stmt->fetch();
+$adventurer = $stmt->fetch();
+
+if (!$adventurer || $adventurer['is_complete'] == 0) {
+    if (!$adventurer) {
+        header("Location: setup_adventurer.php");
+        exit;
+    }
     
-    if ($adventurer && !empty($adventurer['name']) && empty($adventurer['class'])) {
+    if (empty($adventurer['name'])) {
+        header("Location: setup_adventurer.php");
+        exit;
+    } elseif (empty($adventurer['class'])) {
         header("Location: setup_adventurer_class.php");
         exit;
-    } elseif ($adventurer && !empty($adventurer['class']) && ($adventurer['strength'] === 0 || $adventurer['strength'] === null)) {
+    } elseif ($adventurer['strength'] == 0 || $adventurer['strength'] == null) {
         header("Location: setup_adventurer_stats.php");
         exit;
     } else {

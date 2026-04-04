@@ -18,6 +18,7 @@ if (!isset($_SESSION["user_id"])) {
         .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 2rem; width: 100%; max-width: 450px; }
         .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 0.75rem; }
         .form-control { background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; padding: 12px; }
+        .form-control::placeholder { color: #888 !important; opacity: 1; }
     </style>
 </head>
 <body>

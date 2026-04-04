@@ -11,9 +11,9 @@ session_start();
         body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 2rem; width: 100%; max-width: 450px; }
         .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 0.75rem; }
-        .stat-field { width: 60px; background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; text-align: center; }
+        .stat-field { width: 60px; background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; text-align: center; font-size: 1.2rem; border-radius: 5px; }
+        .btn-plus-minus { background: #d4af37; color: #1a1a1a; border: none; width: 40px; height: 40px; border-radius: 5px; font-weight: bold; font-size: 1.5rem; }
     </style>
-</head>
 <body>
     <div class="setup-card shadow-lg">
         <h2 class="text-center text-warning mb-3">Assign S.P.E.C.I.A.L. Stats</h2>
@@ -22,21 +22,32 @@ session_start();
             <?php 
             $stats = ['Strength', 'Perception', 'Endurance', 'Charisma', 'Intelligence', 'Agility', 'Luck'];
             foreach ($stats as $stat): ?>
-                <div class="mb-2 d-flex justify-content-between align-items-center">
-                    <label class="form-label mb-0"><?= $stat ?></label>
-                    <input type="number" name="stats[<?= $stat ?>]" class="form-control stat-field" value="4" min="3" max="10" required>
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <label class="form-label mb-0 fw-bold"><?= $stat ?></label>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn-plus-minus me-2" onclick="changeStat('<?= $stat ?>', -1)">-</button>
+                        <input type="text" name="stats[<?= $stat ?>]" id="stat-<?= $stat ?>" class="form-control stat-field" value="4" readonly required>
+                        <button type="button" class="btn-plus-minus ms-2" onclick="changeStat('<?= $stat ?>', 1)">+</button>
+                    </div>
                 </div>
             <?php endforeach; ?>
             <button type="submit" class="btn btn-dnd w-100 fw-bold mt-4" id="submitBtn" disabled>Finalize Character</button>
         </form>
     </div>
     <script>
+        function changeStat(stat, delta) {
+            const input = document.getElementById('stat-' + stat);
+            let val = parseInt(input.value) + delta;
+            if (val >= 3 && val <= 10) {
+                input.value = val;
+                update();
+            }
+        }
+        
         const fields = document.querySelectorAll('.stat-field');
         const remainingSpan = document.getElementById('remaining');
         const submitBtn = document.getElementById('submitBtn');
         const TOTAL_POINTS = 40;
-
-        let lastValidValues = Array.from(fields).map(f => parseInt(f.value));
 
         function update() {
             let current = 0;
@@ -53,20 +64,6 @@ session_start();
                 submitBtn.disabled = true;
             }
         }
-
-        fields.forEach((f, index) => {
-            f.addEventListener('input', () => {
-                let current = 0;
-                fields.forEach(field => current += parseInt(field.value) || 0);
-                
-                if (current > TOTAL_POINTS) {
-                    f.value = lastValidValues[index];
-                } else {
-                    lastValidValues[index] = parseInt(f.value);
-                }
-                update();
-            });
-        });
         update();
     </script>
 </body>

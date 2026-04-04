@@ -13,39 +13,35 @@ $skills = $_SESSION["skills"];
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Review Character</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; }
-        .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; }
-        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; }
+        body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 2rem; width: 100%; max-width: 450px; }
+        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 0.75rem; margin-top: 0.5rem; }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="setup-card p-4 text-light">
-                    <h2 class="text-center text-warning">Review Your Adventurer</h2>
-                    <p><strong>Name:</strong> <?= htmlspecialchars($adv['name']) ?></p>
-                    <p><strong>Class:</strong> <?= htmlspecialchars($adv['class']) ?></p>
-                    <p><strong>Stats:</strong> Str: <?= $adv['strength'] ?>, Per: <?= $adv['perception'] ?>, End: <?= $adv['endurance'] ?>, Cha: <?= $adv['charisma'] ?>, Int: <?= $adv['intelligence'] ?>, Agi: <?= $adv['agility'] ?>, Lck: <?= $adv['luck'] ?></p>
-                    
-                    <p><strong>Skills:</strong></p>
-                    <ul>
-                        <?php foreach($skills as $name => $val): if($val > 0): ?>
-                            <li><?= htmlspecialchars($name) ?>: <?= htmlspecialchars($val) ?></li>
-                        <?php endif; endforeach; ?>
-                    </ul>
-                    
-                    <form action="setup_adventurer_finalize.php" method="POST">
-                        <button type="submit" class="btn btn-dnd w-100 mt-3">Confirm and Start Adventure!</button>
-                        <a href="setup_adventurer.php" class="btn btn-secondary w-100 mt-2">Restart</a>
-                    </form>
-                </div>
-            </div>
+    <div class="setup-card shadow-lg text-light">
+        <h2 class="text-center text-warning mb-4">Review Your Adventurer</h2>
+        <div class="mb-3">
+            <p class="mb-1"><strong>Name:</strong> <?= htmlspecialchars($adv['name']) ?></p>
+            <p class="mb-1"><strong>Class:</strong> <?= htmlspecialchars($adv['class']) ?></p>
+            <p class="mb-1"><strong>Stats:</strong> Str: <?= $adv['strength'] ?>, Per: <?= $adv['perception'] ?>, End: <?= $adv['endurance'] ?>, Cha: <?= $adv['charisma'] ?>, Int: <?= $adv['intelligence'] ?>, Agi: <?= $adv['agility'] ?>, Lck: <?= $adv['luck'] ?></p>
         </div>
+        
+        <p class="mb-2"><strong>Skills:</strong></p>
+        <ul class="list-unstyled mb-4">
+            <?php foreach($skills as $name => $val): if($val > 0): ?>
+                <li class="small"><?= htmlspecialchars($name) ?>: <?= htmlspecialchars($val) ?></li>
+            <?php endif; endforeach; ?>
+        </ul>
+        
+        <form action="setup_adventurer_finalize.php" method="POST">
+            <button type="submit" class="btn btn-dnd w-100 fw-bold">Confirm and Start Adventure!</button>
+            <a href="setup_adventurer.php" class="btn btn-outline-secondary w-100 mt-2">Restart</a>
+        </form>
     </div>
 </body>
 </html>
