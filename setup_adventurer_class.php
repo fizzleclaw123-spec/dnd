@@ -30,6 +30,7 @@ session_start();
                 <option value="Doctor">Doctor</option>
             </select>
             <button type="submit" class="btn btn-dnd w-100 fw-bold">Confirm Class</button>
+            <a href="setup_adventurer.php" class="btn btn-outline-secondary w-100 mt-2">Back</a>
         </form>
     </div>
 </body>

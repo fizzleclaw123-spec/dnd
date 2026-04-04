@@ -26,12 +26,12 @@ $skills = $_SESSION["skills"];
     <div class="setup-card shadow-lg text-light">
         <h2 class="text-center text-warning mb-4">Review Your Adventurer</h2>
         <div class="mb-3">
-            <p class="mb-1"><strong>Name:</strong> <?= htmlspecialchars($adv['name']) ?></p>
-            <p class="mb-1"><strong>Class:</strong> <?= htmlspecialchars($adv['class']) ?></p>
-            <p class="mb-1"><strong>Stats:</strong> Str: <?= $adv['strength'] ?>, Per: <?= $adv['perception'] ?>, End: <?= $adv['endurance'] ?>, Cha: <?= $adv['charisma'] ?>, Int: <?= $adv['intelligence'] ?>, Agi: <?= $adv['agility'] ?>, Lck: <?= $adv['luck'] ?></p>
+            <p class="mb-1"><strong>Name:</strong> <?= htmlspecialchars($adv['name']) ?> <a href="setup_adventurer.php" class="text-warning small">(Edit)</a></p>
+            <p class="mb-1"><strong>Class:</strong> <?= htmlspecialchars($adv['class']) ?> <a href="setup_adventurer_class.php" class="text-warning small">(Edit)</a></p>
+            <p class="mb-1"><strong>Stats:</strong> Str: <?= $adv['strength'] ?>, Per: <?= $adv['perception'] ?>, End: <?= $adv['endurance'] ?>, Cha: <?= $adv['charisma'] ?>, Int: <?= $adv['intelligence'] ?>, Agi: <?= $adv['agility'] ?>, Lck: <?= $adv['luck'] ?> <a href="setup_adventurer_stats.php" class="text-warning small">(Edit)</a></p>
         </div>
         
-        <p class="mb-2"><strong>Skills:</strong></p>
+        <p class="mb-2"><strong>Skills:</strong> <a href="setup_adventurer_skills.php" class="text-warning small">(Edit)</a></p>
         <ul class="list-unstyled mb-4">
             <?php foreach($skills as $name => $val): if($val > 0): ?>
                 <li class="small"><?= htmlspecialchars($name) ?>: <?= htmlspecialchars($val) ?></li>
@@ -40,7 +40,7 @@ $skills = $_SESSION["skills"];
         
         <form action="setup_adventurer_finalize.php" method="POST">
             <button type="submit" class="btn btn-dnd w-100 fw-bold">Confirm and Start Adventure!</button>
-            <a href="setup_adventurer.php" class="btn btn-outline-secondary w-100 mt-2">Restart</a>
+            <a href="setup_adventurer_skills.php" class="btn btn-outline-secondary w-100 mt-2">Back</a>
         </form>
     </div>
 </body>

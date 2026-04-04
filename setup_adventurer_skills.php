@@ -36,6 +36,7 @@ session_start();
                 </div>
             <?php endforeach; ?>
             <button type="submit" class="btn btn-dnd w-100 fw-bold mt-4" id="submitBtn">Proceed to Review</button>
+            <a href="setup_adventurer_stats.php" class="btn btn-outline-secondary w-100 mt-2">Back</a>
         </form>
     </div>
     <script>
