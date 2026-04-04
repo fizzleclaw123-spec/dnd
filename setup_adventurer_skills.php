@@ -61,13 +61,16 @@ session_start();
             const remaining = TOTAL_POINTS - current;
             remainingSpan.innerText = remaining;
             
-            if (remaining < 0) {
-                remainingSpan.style.color = 'red';
-                submitBtn.disabled = true;
-            } else {
+            if (remaining === 0) {
                 remainingSpan.style.color = 'green';
                 submitBtn.disabled = false;
+            } else {
+                remainingSpan.style.color = 'red';
+                submitBtn.disabled = true;
             }
         }
+        
+        // Disable initially
+        submitBtn.disabled = true;
         update();
     </script>

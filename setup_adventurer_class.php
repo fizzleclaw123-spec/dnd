@@ -1,5 +1,11 @@
 <?php
 session_start();
+require 'db.php';
+
+$stmt = $pdo->prepare("SELECT class FROM adventurers WHERE user_id = ?");
+$stmt->execute([$_SESSION["user_id"]]);
+$adv = $stmt->fetch();
+$selected_class = $adv ? $adv['class'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,11 +29,9 @@ session_start();
         <form action="setup_adventurer_class_action.php" method="POST">
             <select class="form-select mb-4" name="adventurer_class" required>
                 <option value="">Select your class...</option>
-                <option value="Knight">Knight</option>
-                <option value="Rogue">Rogue</option>
-                <option value="Archer">Archer</option>
-                <option value="Mage">Mage</option>
-                <option value="Doctor">Doctor</option>
+                <?php foreach (['Knight', 'Rogue', 'Archer', 'Mage', 'Doctor'] as $class): ?>
+                    <option value="<?= $class ?>" <?= $selected_class === $class ? 'selected' : '' ?>><?= $class ?></option>
+                <?php endforeach; ?>
             </select>
             <button type="submit" class="btn btn-dnd w-100 fw-bold">Confirm Class</button>
             <a href="setup_adventurer.php" class="btn btn-outline-secondary w-100 mt-2">Back</a>
