@@ -56,6 +56,12 @@ $current_stats = [
             const input = document.getElementById('stat-' + stat);
             let val = parseInt(input.value) + delta;
             if (val >= 3 && val <= 10) {
+                // Check if we have points remaining before adding
+                if (delta > 0) {
+                    let current = 0;
+                    fields.forEach(f => current += parseInt(f.value) || 0);
+                    if (current >= TOTAL_POINTS) return;
+                }
                 input.value = val;
                 update();
             }
