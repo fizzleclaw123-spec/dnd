@@ -48,7 +48,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Content
         $mail->isHTML(true);
         $mail->Subject = "Confirm your D&D Registration";
-        $verify_link = "http://dnd.local/verify.php?token=" . $verification_token;
+        $host = $_SERVER['HTTP_HOST'];
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https" : "http";
+        $verify_link = $protocol . "://" . $host . "/verify.php?token=" . $verification_token;
         $mail->Body    = "Welcome adventurer! Please click the link to verify your account: <a href=\"$verify_link\">Verify Account</a>";
 
         $mail->send();
