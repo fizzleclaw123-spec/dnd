@@ -26,7 +26,8 @@ $current_stats = [
     <style>
         body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 2rem; width: 100%; max-width: 450px; }
-        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 0.75rem; }
+        .btn-dnd { background: #8b0000 !important; color: white !important; border: 2px solid #5a0000 !important; padding: 0.75rem; }
+        .btn-dnd:hover { background: #8b0000 !important; color: white !important; border: 2px solid #5a0000 !important; filter: brightness(1.2); }
         .stat-field { width: 60px; background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; text-align: center; font-size: 1.2rem; border-radius: 5px; }
         .btn-plus-minus { background: #d4af37; color: #1a1a1a; border: none; width: 40px; height: 40px; border-radius: 5px; font-weight: bold; font-size: 1.5rem; }
     </style>

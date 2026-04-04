@@ -22,6 +22,7 @@ $name = $adv ? $adv['name'] : '';
         body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 2rem; width: 100%; max-width: 450px; }
         .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 0.75rem; }
+        .btn-dnd:hover { background: #8b0000 !important; color: white !important; border: 2px solid #5a0000 !important; filter: brightness(1.2); }
         .form-control { background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; padding: 12px; }
         .form-control::placeholder { color: #888 !important; opacity: 1; }
     </style>
