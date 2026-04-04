@@ -42,7 +42,7 @@ if (isset($_SESSION["skills"])) {
         
         <p class="mb-2"><strong>Skills:</strong> <a href="setup_adventurer_skills.php" class="text-warning small">(Edit)</a></p>
         <ul class="list-unstyled mb-4">
-            <?php foreach($skills as $name => $val): if($val > 0): ?>
+            <?php foreach($existing_skills as $name => $val): if($val > 0): ?>
                 <li class="small"><?= htmlspecialchars($name) ?>: <?= htmlspecialchars($val) ?></li>
             <?php endif; endforeach; ?>
         </ul>
