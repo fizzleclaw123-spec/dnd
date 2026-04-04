@@ -6,6 +6,11 @@ if (!isset($_SESSION["user_id"])) {
     header("Location: index.php");
     exit;
 }
+
+$stmt = $pdo->prepare("SELECT name FROM adventurers WHERE user_id = ?");
+$stmt->execute([$_SESSION["user_id"]]);
+$adv = $stmt->fetch();
+$name = $adv ? $adv['name'] : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +32,7 @@ if (!isset($_SESSION["user_id"])) {
         <p class="text-center text-light mb-4">Before you start your journey, tell me: what is your adventurer's name?</p>
         <form action="setup_adventurer_action.php" method="POST">
             <div class="mb-3">
-                <input type="text" class="form-control" name="adventurer_name" placeholder="Enter name..." required>
+                <input type="text" class="form-control" name="adventurer_name" value="<?= htmlspecialchars($name) ?>" placeholder="Enter name..." required>
             </div>
             <button type="submit" class="btn btn-dnd w-100 fw-bold">Proceed</button>
         </form>
