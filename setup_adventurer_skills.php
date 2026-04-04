@@ -3,11 +3,16 @@ session_start();
 require 'db.php';
 
 $user_id = $_SESSION["user_id"];
-$stmt = $pdo->prepare("SELECT * FROM character_skills WHERE user_id = ?");
-$stmt->execute([$user_id]);
+// Load skills: session first, then database
 $existing_skills = [];
-while ($row = $stmt->fetch()) {
-    $existing_skills[$row['skill_name']] = $row['level'];
+if (isset($_SESSION["skills"])) {
+    $existing_skills = $_SESSION["skills"];
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM character_skills WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    while ($row = $stmt->fetch()) {
+        $existing_skills[$row['skill_name']] = $row['level'];
+    }
 }
 ?>
 <!DOCTYPE html>

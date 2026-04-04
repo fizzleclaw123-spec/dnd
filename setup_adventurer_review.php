@@ -7,8 +7,17 @@ $stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $adv = $stmt->fetch();
 
-// Skills data from session
-$skills = $_SESSION["skills"];
+// Skills data from session (if available) or database
+if (isset($_SESSION["skills"])) {
+    $existing_skills = $_SESSION["skills"];
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM character_skills WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $existing_skills = [];
+    while ($row = $stmt->fetch()) {
+        $existing_skills[$row['skill_name']] = $row['level'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
