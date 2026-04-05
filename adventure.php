@@ -9,9 +9,16 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = $_SESSION["user_id"];
 
-// Fetch the adventure history
-$stmt = $pdo->prepare("SELECT * FROM adventure_logs WHERE user_id = ? ORDER BY turn_number ASC");
-$stmt->execute([$user_id]);
+// Fetch the adventure logs for the SPECIFIC adventure
+$adventure_id = $_GET['id'] ?? null;
+if (!$adventure_id) {
+    header("Location: dashboard.php");
+    exit();
+}
+$_SESSION['active_adventure_id'] = $adventure_id;
+
+$stmt = $pdo->prepare("SELECT * FROM adventure_logs WHERE adventure_id = ? ORDER BY turn_number ASC");
+$stmt->execute([$adventure_id]);
 $logs = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -57,6 +64,9 @@ $logs = $stmt->fetchAll();
 <body>
     <div class="container py-3">
         <h2 class="text-center text-warning">Adventure Log</h2>
+        <div class="text-center mb-3">
+            <a href="dashboard.php" class="btn btn-outline-secondary">Leave Adventure (Return to Dashboard)</a>
+        </div>
         <div class="log-container" id="log">
             <?php if (empty($logs)): ?>
                 <p class="text-center">The adventure hasn't started yet.</p>
@@ -73,7 +83,16 @@ $logs = $stmt->fetchAll();
                     
                     <?php if ($isLast): ?>
                         <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
+                        <button id="skip-btn-<?= $log['id'] ?>" class="btn btn-sm btn-outline-secondary mt-1" onclick="skipTypewriter(<?= $log['id'] ?>, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $log['dm_narration']))) ?>`)">Skip Animation</button>
                         <script>
+                            let timer_<?= $log['id'] ?>;
+                            function skipTypewriter(id, text) {
+                                clearTimeout(timer_<?= $log['id'] ?>);
+                                const element = document.getElementById('dm-text-' + id);
+                                element.innerHTML = text.replace(/\n/g, '<br>');
+                                document.getElementById('skip-btn-' + id).style.display = 'none';
+                            }
+
                             (function() {
                                 const rawText = `<?= htmlspecialchars_decode($log['dm_narration']) ?>`;
                                 const text = rawText.replace(/<br \/>/g, '\n');
@@ -88,7 +107,9 @@ $logs = $stmt->fetchAll();
                                             element.appendChild(document.createTextNode(char));
                                         }
                                         i++;
-                                        setTimeout(type, 15);
+                                        timer_<?= $log['id'] ?> = setTimeout(type, 15);
+                                    } else {
+                                        document.getElementById('skip-btn-<?= $log['id'] ?>').style.display = 'none';
                                     }
                                 }
                                 type();
@@ -102,7 +123,7 @@ $logs = $stmt->fetchAll();
             <?php endif; ?>
         </div>
         <div class="input-area">
-            <form action="adventure_action.php" method="POST">
+            <form action="adventure_action.php?id=<?= $adventure_id ?>" method="POST">
                 <div class="input-group">
                     <input type="text" name="action" class="form-control bg-dark text-white border-secondary" placeholder="What do you do?" required>
                     <button type="submit" class="btn btn-dnd">Submit</button>

@@ -53,7 +53,8 @@ $prog = $stmt->fetch();
     <style>
         body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; }
         .card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 1.5rem; width: 100%; max-width: 400px; color: #d4af37; }
-        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 0.75rem; margin-top: 0.5rem; width: 100%; }
+        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; padding: 0.75rem; }
+        .btn-dnd:hover { background: #8b0000 !important; color: white !important; border: 2px solid #5a0000 !important; filter: brightness(1.2); }
         .prog-row { font-size: 1.2rem; margin-bottom: 0.5rem; }
     </style>
 </head>
@@ -69,8 +70,35 @@ $prog = $stmt->fetch();
             </div>
             <div class="d-grid gap-2">
                 <a href="character_sheet.php" class="btn btn-dnd">View Character Sheet</a>
-                <a href="start_adventure.php" class="btn btn-dnd">Start Adventure</a>
-                <a href="logout.php" class="btn btn-outline-secondary">Logout</a>
+                <a href="create_adventure.php" class="btn btn-dnd">Create Adventure</a>
+                <h4 class="text-warning mt-4">My Adventures</h4>
+                <?php
+                $stmt = $pdo->prepare("SELECT a.* FROM adventures a 
+                                       JOIN adventure_members am ON a.id = am.adventure_id 
+                                       WHERE am.user_id = ?");
+                $stmt->execute([$user_id]);
+                $my_adventures = $stmt->fetchAll();
+                
+                if (count($my_adventures) > 0) {
+                    foreach ($my_adventures as $adv) {
+                        echo '<div class="card mb-2" style="background: #3d3d3d; padding: 10px;">';
+                        echo '<strong>' . htmlspecialchars($adv['name']) . '</strong> (' . htmlspecialchars($adv['type']) . ')<br>';
+                        echo '<small>Status: ' . htmlspecialchars($adv['status']) . '</small><br>';
+                        
+                        if ($adv['status'] === 'lobby') {
+                            echo '<a href="lobby.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-warning mt-2">Enter Lobby</a> ';
+                        } else {
+                            echo '<a href="adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-success mt-2">Resume Adventure</a> ';
+                        }
+                        
+                        echo '<a href="delete_adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-danger mt-2" onclick="return confirm(\'Are you sure you want to delete this adventure?\');">Delete</a>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<p>No adventures found.</p>';
+                }
+                ?>
+                <a href="logout.php" class="btn btn-outline-secondary mt-3">Logout</a>
             </div>
         </div>
     </div>

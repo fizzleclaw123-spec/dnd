@@ -9,6 +9,7 @@ if (!isset($_SESSION["user_id"]) || !isset($_POST["action"])) {
 }
 
 $user_id = $_SESSION["user_id"];
+$adventure_id = $_GET["id"] ?? $_SESSION["active_adventure_id"];
 $player_action = $_POST["action"];
 
 // Get character info
@@ -16,9 +17,9 @@ $stmt = $pdo->prepare("SELECT name, class FROM adventurers WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $adv = $stmt->fetch();
 
-// Get context
-$stmt = $pdo->prepare("SELECT player_action, dm_narration FROM adventure_logs WHERE user_id = ? ORDER BY turn_number DESC LIMIT 3");
-$stmt->execute([$user_id]);
+// Get context - FILTER BY adventure_id
+$stmt = $pdo->prepare("SELECT player_action, dm_narration FROM adventure_logs WHERE adventure_id = ? ORDER BY turn_number DESC LIMIT 3");
+$stmt->execute([$adventure_id]);
 $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $context = "You are a Dungeon Master for a D&D adventure. Player: {$adv['name']}, Class: {$adv['class']}. ";
@@ -44,15 +45,15 @@ curl_close($ch);
 $data = json_decode($response, true);
 $dm_narration = $data['candidates'][0]['content']['parts'][0]['text'] ?? "The adventure continues...";
 
-// Get next turn
-$stmt = $pdo->prepare("SELECT MAX(turn_number) as last_turn FROM adventure_logs WHERE user_id = ?");
-$stmt->execute([$user_id]);
+// Get next turn - FILTER BY adventure_id
+$stmt = $pdo->prepare("SELECT MAX(turn_number) as last_turn FROM adventure_logs WHERE adventure_id = ?");
+$stmt->execute([$adventure_id]);
 $next_turn = ($stmt->fetch()['last_turn'] ?? 0) + 1;
 
-// Save log
-$stmt = $pdo->prepare("INSERT INTO adventure_logs (user_id, turn_number, player_action, dm_narration) VALUES (?, ?, ?, ?)");
-$stmt->execute([$user_id, $next_turn, $player_action, $dm_narration]);
+// Save log - ADD adventure_id
+$stmt = $pdo->prepare("INSERT INTO adventure_logs (user_id, adventure_id, turn_number, player_action, dm_narration) VALUES (?, ?, ?, ?, ?)");
+$stmt->execute([$user_id, $adventure_id, $next_turn, $player_action, $dm_narration]);
 
-header("Location: adventure.php");
+header("Location: adventure.php?id=$adventure_id");
 exit;
 ?>
