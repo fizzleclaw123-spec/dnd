@@ -25,10 +25,10 @@ if (isset($_POST['toggle_ready'])) {
 }
 
 // Fetch adventure and members
-$stmt = $pdo->prepare("SELECT a.*, am.user_id as member_id, am.is_ready, u.email as player_name 
+$stmt = $pdo->prepare("SELECT a.*, am.user_id as member_id, am.is_ready, adv.name as char_name 
                        FROM adventures a 
                        JOIN adventure_members am ON a.id = am.adventure_id 
-                       LEFT JOIN users u ON am.user_id = u.id 
+                       LEFT JOIN adventurers adv ON am.adventurer_id = adv.id 
                        WHERE a.id = ?");
 $stmt->execute([$adventure_id]);
 $members = $stmt->fetchAll();
@@ -63,12 +63,12 @@ foreach ($members as $m) {
             <h2 class="text-warning">Lobby: <?= htmlspecialchars($adventure['name']) ?></h2>
             <div class="table-responsive">
                 <table class="table table-dark table-striped">
-                    <thead><tr><th>Player</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Status</th><th>Player</th></tr></thead>
                     <tbody id="lobby-members">
                         <?php foreach ($members as $m): ?>
                         <tr>
-                            <td><?= htmlspecialchars($m['player_name']) ?></td>
                             <td><?= $m['is_ready'] ? '✅ Ready' : '❌ Not Ready' ?></td>
+                            <td><?= htmlspecialchars($m['char_name'] ?? "Unknown") ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
