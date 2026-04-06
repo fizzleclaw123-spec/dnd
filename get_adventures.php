@@ -33,11 +33,15 @@ if ($type == 'my') {
                            AND a.id IN (SELECT adventure_id FROM adventure_members WHERE user_id IS NOT NULL)");
     $stmt->execute([$user_id]);
     $list = $stmt->fetchAll();
-    foreach ($list as $adv) {
-        echo '<div class="card mb-2" style="background: #3d3d3d; padding: 10px;">';
-        echo '<strong>' . htmlspecialchars($adv['name']) . '</strong><br>';
-        echo '<a href="join_adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-info mt-2">Join Lobby</a>';
-        echo '</div>';
+    if (empty($list)) {
+        echo '<p>No open adventures available.</p>';
+    } else {
+        foreach ($list as $adv) {
+            echo '<div class="card mb-2" style="background: #3d3d3d; padding: 10px;">';
+            echo '<strong>' . htmlspecialchars($adv['name']) . '</strong><br>';
+            echo '<a href="join_adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-info mt-2">Join Lobby</a>';
+            echo '</div>';
+        }
     }
 }
 ?>

@@ -13,10 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_SESSION['user_id'];
     
     // Get creator's character name
-    $stmt = $pdo->prepare("SELECT name FROM adventurers WHERE user_id = ?");
+    $stmt = $pdo->prepare("SELECT id, name FROM adventurers WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $adv_creator = $stmt->fetch();
     $creator_name = $adv_creator['name'] ?? "Adventurer";
+    $adventurer_id = $adv_creator['id'] ?? null;
     
     // Count how many adventures they've created
     $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM adventures WHERE created_by = ?");
@@ -30,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $adventure_id = $pdo->lastInsertId();
 
     // Default to adding the creator as a member
-    $stmt = $pdo->prepare("INSERT INTO adventure_members (adventure_id, user_id, is_ready) VALUES (?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO adventure_members (adventure_id, user_id, adventurer_id, is_ready) VALUES (?, ?, ?, ?)");
     $is_ready = ($type == 'solo') ? 1 : 0;
-    $stmt->execute([$adventure_id, $user_id, $is_ready]);
+    $stmt->execute([$adventure_id, $user_id, $adventurer_id, $is_ready]);
 
     if ($type == 'solo') {
         // Generate initial greeting via Gemini
