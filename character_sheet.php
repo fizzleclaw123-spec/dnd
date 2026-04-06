@@ -27,10 +27,11 @@ $skills = $stmt->fetchAll();
     <title>Character Sheet</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; }
-        .sheet-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 20px; width: 100%; max-width: 600px; margin: 20px auto; }
-        .stat-box { background: #3d3d3d; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
-        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; display: block; width: 100%; padding: 10px; text-align: center; }
+        body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; padding: 15px; }
+        .sheet-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 20px; width: 100%; max-width: 600px; margin: 0 auto; }
+        .stat-box { background: #3d3d3d; border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: center; font-weight: bold; }
+        .btn-dnd { background: #8b0000; color: white; border: 2px solid #5a0000; display: block; width: 100%; padding: 12px; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .btn-dnd:hover { background: #a00000; color: white; filter: brightness(1.1); }
     </style>
 </head>
 <body class="bg-dark text-light p-3">

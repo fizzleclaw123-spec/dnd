@@ -98,6 +98,27 @@ $prog = $stmt->fetch();
                     echo '<p>No adventures found.</p>';
                 }
                 ?>
+
+                <h4 class="text-warning mt-4">Join Multiplayer Adventure</h4>
+                <?php
+                $stmt = $pdo->prepare("SELECT a.* FROM adventures a 
+                                       WHERE a.type = 'multiplayer' AND a.status = 'lobby'
+                                       AND a.id NOT IN (SELECT adventure_id FROM adventure_members WHERE user_id = ?)");
+                $stmt->execute([$user_id]);
+                $available_adventures = $stmt->fetchAll();
+                
+                if (count($available_adventures) > 0) {
+                    foreach ($available_adventures as $adv) {
+                        echo '<div class="card mb-2" style="background: #3d3d3d; padding: 10px;">';
+                        echo '<strong>' . htmlspecialchars($adv['name']) . '</strong><br>';
+                        echo '<a href="join_adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-info mt-2">Join Lobby</a>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<p>No open adventures available.</p>';
+                }
+                ?>
+                
                 <a href="logout.php" class="btn btn-outline-secondary mt-3">Logout</a>
             </div>
         </div>

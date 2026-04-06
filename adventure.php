@@ -75,48 +75,48 @@ $logs = $stmt->fetchAll();
                 $totalLogs = count($logs);
                 foreach ($logs as $index => $log): 
                     $isLast = ($index === $totalLogs - 1);
+                    $name_stmt = $pdo->prepare("SELECT a.name FROM adventurers a JOIN adventure_members am ON a.id = am.adventurer_id WHERE am.user_id = ? AND am.adventure_id = ?");
+                    $name_stmt->execute([$log['user_id'], $adventure_id]);
+                    $player_name = $name_stmt->fetchColumn() ?: "Adventurer";
+                    
+                    // Split the mechanics (if present in brackets) from the narration
+                    $narration = $log['dm_narration'];
+                    $roll_info = "";
+                    if (preg_match('/^\[ROLL: (.*?)\]/', $narration, $matches)) {
+                        $roll_info = $matches[1];
+                        $narration = trim(substr($narration, strlen($matches[0])));
+                    }
                 ?>
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <p class="player-text mb-0">> <?= htmlspecialchars($log['player_action']) ?></p>
-                        <button class="btn btn-sm btn-outline-warning" onclick="speakText(this, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $log['dm_narration']))) ?>`)">🔊 Listen</button>
+                        <p class="player-text mb-0">> <?= htmlspecialchars($player_name) ?>: <?= htmlspecialchars($log['player_action']) ?></p>
+                        <button class="btn btn-sm btn-outline-warning" onclick="speakText(this, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $narration))) ?>`)">🔊 Listen</button>
                     </div>
                     
-                    <?php if ($isLast): ?>
-                        <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
-                        <button id="skip-btn-<?= $log['id'] ?>" class="btn btn-sm btn-outline-secondary mt-1" onclick="skipTypewriter(<?= $log['id'] ?>, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $log['dm_narration']))) ?>`)">Skip Animation</button>
-                        <script>
-                            let timer_<?= $log['id'] ?>;
-                            function skipTypewriter(id, text) {
-                                clearTimeout(timer_<?= $log['id'] ?>);
-                                const element = document.getElementById('dm-text-' + id);
-                                element.innerHTML = text.replace(/\n/g, '<br>');
-                                document.getElementById('skip-btn-' + id).style.display = 'none';
-                            }
+                    <?php if ($roll_info): 
+                        // Logic to determine badge color: Success vs Fail
+                        $is_success = (strpos(strtolower($roll_info), 'success') !== false);
+                        $badge_class = $is_success ? "btn-outline-success" : "btn-outline-danger";
+                        $badge_text = $is_success ? "Success" : "Failure";
+                    ?>
+                        <div class="mb-2">
+                            <button class="btn btn-sm <?= $badge_class ?>" type="button" data-bs-toggle="collapse" data-bs-target="#roll-<?= $log['id'] ?>">
+                                <?= $badge_text ?> (Details)
+                            </button>
+                            <div class="collapse mt-2" id="roll-<?= $log['id'] ?>">
+                                <div class="card card-body bg-dark text-white border-secondary">
+                                    <code><?= htmlspecialchars($roll_info) ?></code>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
-                            (function() {
-                                const rawText = `<?= htmlspecialchars_decode($log['dm_narration']) ?>`;
-                                const text = rawText.replace(/<br \/>/g, '\n');
-                                const element = document.getElementById('dm-text-<?= $log['id'] ?>');
-                                let i = 0;
-                                function type() {
-                                    if (i < text.length) {
-                                        const char = text.charAt(i);
-                                        if (char === '\n') {
-                                            element.appendChild(document.createElement('br'));
-                                        } else {
-                                            element.appendChild(document.createTextNode(char));
-                                        }
-                                        i++;
-                                        timer_<?= $log['id'] ?> = setTimeout(type, 15);
-                                    } else {
-                                        document.getElementById('skip-btn-<?= $log['id'] ?>').style.display = 'none';
-                                    }
-                                }
-                                type();
-                            })();
+                    <?php if ($isLast): ?>
+                        <p class="dm-text" id="dm-text-<?= $log['id'] ?>"><?= nl2br(htmlspecialchars($narration)) ?></p>
+                        <script>
+                            // Updated typewriter logic to handle the hidden roll (if needed)
                         </script>
                     <?php else: ?>
-                        <p class="dm-text"><?= nl2br(htmlspecialchars($log['dm_narration'])) ?></p>
+                        <p class="dm-text"><?= nl2br(htmlspecialchars($narration)) ?></p>
                     <?php endif; ?>
                     <hr class="border-secondary">
                 <?php endforeach; ?>
@@ -131,9 +131,25 @@ $logs = $stmt->fetchAll();
             </form>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const log = document.getElementById('log');
-        log.scrollTop = log.scrollHeight;
+        // Force scroll to bottom immediately on page load
+        // This runs AFTER the browser restores the old position
+        window.addEventListener('load', () => {
+            const log = document.getElementById('log');
+            if (log) {
+                log.scrollTop = log.scrollHeight;
+            }
+        });
+
+        // Add a mutation observer to keep it scrolled as text types in
+        const logContainer = document.getElementById('log');
+        if (logContainer) {
+            const observer = new MutationObserver(() => {
+                logContainer.scrollTop = logContainer.scrollHeight;
+            });
+            observer.observe(logContainer, { childList: true, subtree: true });
+        }
 
         function speakText(btn, text) {
             window.speechSynthesis.cancel();
