@@ -92,7 +92,9 @@ $prog = $stmt->fetch();
                             echo '<a href="adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-success mt-2">Resume Adventure</a> ';
                         }
                         
-                        echo '<a href="delete_adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-danger mt-2" onclick="return confirm(\'Are you sure you want to delete this adventure?\');">Delete</a>';
+                        if ($adv['created_by'] == $user_id) {
+                            echo '<a href="delete_adventure.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-danger mt-2" onclick="return confirm(\'Are you sure you want to delete this adventure?\');">Delete</a>';
+                        }
                         echo '</div>';
                     }
                 } else {
