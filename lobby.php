@@ -12,7 +12,6 @@ $user_id = $_SESSION['user_id'];
 
 // Handle ready/unready action
 if (isset($_POST['toggle_ready'])) {
-    // Need to update based on user_id AND adventurer_id if possible, but for now let's just make sure we are setting adventurer_id
     $stmt = $pdo->prepare("SELECT id FROM adventurers WHERE user_id = ? LIMIT 1");
     $stmt->execute([$user_id]);
     $adv = $stmt->fetch();

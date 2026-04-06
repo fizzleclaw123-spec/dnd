@@ -72,6 +72,7 @@ $prog = $stmt->fetch();
                 <a href="character_sheet.php" class="btn btn-dnd">View Character Sheet</a>
                 <a href="create_adventure.php" class="btn btn-dnd">Create Adventure</a>
                 <h4 class="text-warning mt-4">My Adventures</h4>
+                <div id="my-adventures">
                 <?php
                 $stmt = $pdo->prepare("SELECT a.* FROM adventures a 
                                        JOIN adventure_members am ON a.id = am.adventure_id 
@@ -98,8 +99,10 @@ $prog = $stmt->fetch();
                     echo '<p>No adventures found.</p>';
                 }
                 ?>
+                </div>
 
                 <h4 class="text-warning mt-4">Join Multiplayer Adventure</h4>
+                <div id="join-adventures">
                 <?php
                 $stmt = $pdo->prepare("SELECT a.* FROM adventures a 
                                        WHERE a.type = 'multiplayer' AND a.status = 'lobby'
@@ -118,6 +121,19 @@ $prog = $stmt->fetch();
                     echo '<p>No open adventures available.</p>';
                 }
                 ?>
+                </div>
+                
+                <script>
+                    function refreshAdventureLists() {
+                        fetch('get_adventures.php?type=my')
+                            .then(res => res.text())
+                            .then(html => document.getElementById('my-adventures').innerHTML = html);
+                        fetch('get_adventures.php?type=join')
+                            .then(res => res.text())
+                            .then(html => document.getElementById('join-adventures').innerHTML = html);
+                    }
+                    setInterval(refreshAdventureLists, 3000);
+                </script>
                 
                 <a href="logout.php" class="btn btn-outline-secondary mt-3">Logout</a>
             </div>

@@ -11,7 +11,19 @@ require_once 'config.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $type = $_POST['type']; // 'solo' or 'multiplayer'
     $user_id = $_SESSION['user_id'];
-    $adventure_name = "New Adventure";
+    
+    // Get creator's character name
+    $stmt = $pdo->prepare("SELECT name FROM adventurers WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $adv_creator = $stmt->fetch();
+    $creator_name = $adv_creator['name'] ?? "Adventurer";
+    
+    // Count how many adventures they've created
+    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM adventures WHERE created_by = ?");
+    $stmt->execute([$user_id]);
+    $count = $stmt->fetch()['count'] + 1;
+    
+    $adventure_name = "{$creator_name} Lobby {$count}";
 
     $stmt = $pdo->prepare("INSERT INTO adventures (name, type, created_by) VALUES (?, ?, ?)");
     $stmt->execute([$adventure_name, $type, $user_id]);
