@@ -24,7 +24,7 @@
                     <?php if (isset($_SESSION["error"])): ?>
                         <div class="alert alert-danger"><?= $_SESSION["error"]; unset($_SESSION["error"]); ?></div>
                     <?php endif; ?>
-                    <form action="register_action.php" method="POST">
+                    <form action="register_action.php" method="POST" id="regForm">
                         <div class="mb-3">
                             <label class="form-label">📧 Email</label>
                             <input type="email" class="form-control bg-dark text-white border-secondary" name="email" required>
@@ -38,8 +38,14 @@
                                 </button>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-dnd w-100">Register</button>
+                        <button type="submit" class="btn btn-dnd w-100" id="regBtn">Register</button>
                     </form>
+                    <script>
+                        document.getElementById('regForm').addEventListener('submit', function() {
+                            document.getElementById('regBtn').disabled = true;
+                            document.getElementById('regBtn').innerText = 'Registering...';
+                        });
+                    </script>
                     <p class="text-center mt-3"><a href="index.php" class="text-warning">Back to Login</a></p>
                 </div>
             </div>

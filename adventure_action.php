@@ -68,8 +68,9 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Add a 30s timeout explicitly
+curl_setopt($ch, CURLOPT_TIMEOUT, 60); 
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Add this line
 $response = curl_exec($ch);
 if (curl_errno($ch)) {
     die('Curl Error: ' . curl_error($ch));

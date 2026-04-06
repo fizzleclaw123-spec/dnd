@@ -111,9 +111,37 @@ $logs = $stmt->fetchAll();
                     <?php endif; ?>
 
                     <?php if ($isLast): ?>
-                        <p class="dm-text" id="dm-text-<?= $log['id'] ?>"><?= nl2br(htmlspecialchars($narration)) ?></p>
+                        <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
+                        <button id="skip-btn-<?= $log['id'] ?>" class="btn btn-sm btn-outline-secondary mt-1" onclick="skip(<?= $log['id'] ?>)">Skip</button>
                         <script>
-                            // Updated typewriter logic to handle the hidden roll (if needed)
+                            function skip(id) {
+                                document.getElementById('dm-text-'+id).innerHTML = `<?= str_replace(["\r", "\n"], ['<br>', '<br>'], htmlspecialchars_decode(strip_tags($narration, '<br>'))) ?>`;
+                                document.getElementById('skip-btn-'+id).style.display = 'none';
+                                window['stop_'+id] = true;
+                            }
+                            (function() {
+                                const id = <?= $log['id'] ?>;
+                                const text = `<?= str_replace(["\r", "\n"], ['\n', '\n'], htmlspecialchars_decode(strip_tags($narration))) ?>`;
+                                const el = document.getElementById('dm-text-'+id);
+                                let i = 0;
+                                function type() {
+                                    if(window['stop_'+id]) return;
+                                    if (i < text.length) {
+                                        const char = text.charAt(i);
+                                        if (char === '\n') {
+                                            el.appendChild(document.createElement('br'));
+                                        } else {
+                                            el.appendChild(document.createTextNode(char));
+                                        }
+                                        i++;
+                                        setTimeout(type, 15);
+                                    } else {
+                                        const b = document.getElementById('skip-btn-'+id);
+                                        if(b) b.style.display = 'none';
+                                    }
+                                }
+                                type();
+                            })();
                         </script>
                     <?php else: ?>
                         <p class="dm-text"><?= nl2br(htmlspecialchars($narration)) ?></p>
@@ -123,30 +151,64 @@ $logs = $stmt->fetchAll();
             <?php endif; ?>
         </div>
         <div class="input-area">
-            <form action="adventure_action.php?id=<?= $adventure_id ?>" method="POST">
+            <form action="adventure_action.php?id=<?= $adventure_id ?>" method="POST" id="actionForm">
                 <div class="input-group">
                     <input type="text" name="action" class="form-control bg-dark text-white border-secondary" placeholder="What do you do?" required>
-                    <button type="submit" class="btn btn-dnd">Submit</button>
+                    <button type="submit" class="btn btn-dnd" id="submitBtn">Submit</button>
                 </div>
             </form>
+            <script>
+                document.getElementById('actionForm').addEventListener('submit', function() {
+                    const btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerText = 'Sending...';
+                });
+            </script>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Force scroll to bottom immediately on page load
-        // This runs AFTER the browser restores the old position
-        window.addEventListener('load', () => {
+        // Use a persistent scroll technique that runs after ALL assets load.
+        // We use a small timeout to ensure browser layout is finalized.
+        function jumpToBottom() {
             const log = document.getElementById('log');
             if (log) {
+                // Scroll to the very end
                 log.scrollTop = log.scrollHeight;
+                // Double-check: ensure the very last item is visible
+                const lastItem = log.lastElementChild;
+                if (lastItem) {
+                    lastItem.scrollIntoView({ behavior: 'auto', block: 'end' });
+                }
             }
+        }
+
+        // Run when the window finishes loading everything
+        window.addEventListener('load', () => {
+            // Give the browser a moment to settle after layout paint
+            setTimeout(jumpToBottom, 150);
         });
 
-        // Add a mutation observer to keep it scrolled as text types in
+        // Add a mutation observer to keep it scrolled as text types in or refreshes
+        // ONLY if the user is already near the bottom (reading new content)
         const logContainer = document.getElementById('log');
         if (logContainer) {
-            const observer = new MutationObserver(() => {
-                logContainer.scrollTop = logContainer.scrollHeight;
+            const observer = new MutationObserver((mutations) => {
+                // If the user has scrolled up, do NOT auto-scroll.
+                const isNearBottom = logContainer.scrollHeight - logContainer.scrollTop - logContainer.clientHeight < 150;
+                if (!isNearBottom) return;
+
+                // If a new DM narration or player action element was added, jump to bottom
+                let newContent = false;
+                mutations.forEach(m => {
+                    m.addedNodes.forEach(node => {
+                        if (node.nodeType === 1 && (node.classList.contains('dm-text') || node.classList.contains('player-text'))) {
+                            newContent = true;
+                        }
+                    });
+                });
+                
+                if (newContent) jumpToBottom();
             });
             observer.observe(logContainer, { childList: true, subtree: true });
         }
@@ -155,10 +217,27 @@ $logs = $stmt->fetchAll();
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Neural')));
+            
+            // Try to find a male voice, or fallback to the first available en-US voice
+            // Some mobile browsers restrict voice selection significantly.
+            const preferredVoice = voices.find(v => 
+                v.lang.startsWith('en') && 
+                (v.name.toLowerCase().includes('male') || 
+                 v.name.toLowerCase().includes('daniel') || 
+                 v.name.toLowerCase().includes('david') ||
+                 v.name.toLowerCase().includes('tom'))
+            ) || voices.find(v => v.lang.startsWith('en'));
+
             if (preferredVoice) utterance.voice = preferredVoice;
-            utterance.lang = 'en-US';
+            
+            // Adjust pitch/rate for atmosphere
+            utterance.pitch = 0.7; // Lower = deeper
+            utterance.rate = 0.85; // Slower = more dramatic
+            
             window.speechSynthesis.speak(utterance);
+            
+            // Console log to help debug if the voice is being found
+            console.log("Selected voice:", preferredVoice ? preferredVoice.name : "None");
         }
     </script>
 </body>

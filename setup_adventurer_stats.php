@@ -25,17 +25,17 @@ $current_stats = [
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background: #1a1a1a; color: #d4af37; font-family: "Georgia", serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 2rem; width: 100%; max-width: 450px; }
-        .btn-dnd { background: #8b0000 !important; color: white !important; border: 2px solid #5a0000 !important; padding: 0.75rem; }
-        .btn-dnd:hover { background: #8b0000 !important; color: white !important; border: 2px solid #5a0000 !important; filter: brightness(1.2); }
-        .stat-field { width: 60px; background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; text-align: center; font-size: 1.2rem; border-radius: 5px; }
-        .btn-plus-minus { background: #d4af37; color: #1a1a1a; border: none; width: 40px; height: 40px; border-radius: 5px; font-weight: bold; font-size: 1.5rem; }
+        .setup-card { background: #2d2d2d; border: 3px solid #d4af37; border-radius: 15px; padding: 1.5rem; width: 100%; max-width: 450px; font-size: 0.9rem; }
+        .btn-dnd { background: #8b0000 !important; color: white !important; border: 2px solid #5a0000 !important; padding: 0.5rem; font-size: 0.9rem; }
+        .stat-field { width: 50px; background: #1a1a1a !important; color: white !important; border-color: #d4af37 !important; text-align: center; font-size: 1rem; border-radius: 5px; }
+        .btn-plus-minus { background: #d4af37; color: #1a1a1a; border: none; width: 35px; height: 35px; border-radius: 5px; font-weight: bold; font-size: 1.2rem; }
+        .form-label { font-size: 0.9rem; }
     </style>
 </head>
 <body>
     <div class="setup-card shadow-lg">
-        <h2 class="text-center text-warning mb-3">Assign S.P.E.C.I.A.L. Stats</h2>
-        <p class="text-center text-light mb-4 small">Points remaining: <span id="remaining" style="color: red;">0</span> (Total: 40). Min 3, Max 10.</p>
+        <h2 class="text-center text-warning mb-3 h4">Assign S.P.E.C.I.A.L. Stats</h2>
+        <p class="text-center text-light mb-3 small">Points remaining: <span id="remaining" style="color: red;">0</span> (Total: 40). Min 3, Max 10.</p>
         <form action="setup_adventurer_stats_action.php" method="POST" id="statsForm">
             <?php 
             foreach ($current_stats as $stat => $val): ?>

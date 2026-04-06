@@ -29,7 +29,8 @@ if ($type == 'my') {
 } else {
     $stmt = $pdo->prepare("SELECT a.* FROM adventures a 
                            WHERE a.type = 'multiplayer' AND a.status = 'lobby'
-                           AND a.id NOT IN (SELECT adventure_id FROM adventure_members WHERE user_id = ?)");
+                           AND a.id NOT IN (SELECT adventure_id FROM adventure_members WHERE user_id = ?)
+                           AND a.id IN (SELECT adventure_id FROM adventure_members WHERE user_id IS NOT NULL)");
     $stmt->execute([$user_id]);
     $list = $stmt->fetchAll();
     foreach ($list as $adv) {
