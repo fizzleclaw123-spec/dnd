@@ -7,6 +7,10 @@ if (!isset($_SESSION["user_id"]) || !isset($_POST["stats"])) {
     exit;
 }
 
+$stmt = $pdo->prepare("SELECT id FROM adventurers WHERE user_id = ?");
+$stmt->execute([$_SESSION["user_id"]]);
+$adv = $stmt->fetch();
+$_SESSION['adventurer_id'] = $adv['id'];
 $stats = $_POST["stats"];
 // Basic total validation
 if (array_sum($stats) > 40) {
@@ -15,25 +19,19 @@ if (array_sum($stats) > 40) {
     exit;
 }
 
-$stmt = $pdo->prepare("UPDATE adventurers SET 
-    strength = ?, 
-    perception = ?, 
-    endurance = ?, 
-    charisma = ?, 
-    intelligence = ?, 
-    agility = ?, 
-    luck = ? 
-    WHERE user_id = ?");
+// Update adventurer_stats
+$stmt = $pdo->prepare("INSERT OR REPLACE INTO adventurer_stats (adventurer_id, strength, perception, endurance, charisma, intelligence, agility, luck) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
 $stmt->execute([
+    $_SESSION['adventurer_id'],
     $stats['Strength'], 
     $stats['Perception'], 
     $stats['Endurance'], 
     $stats['Charisma'], 
     $stats['Intelligence'], 
     $stats['Agility'], 
-    $stats['Luck'],
-    $_SESSION["user_id"]
+    $stats['Luck']
 ]);
 
 header("Location: setup_adventurer_skills.php");

@@ -10,13 +10,19 @@ if (!isset($_SESSION["user_id"])) {
 $user_id = $_SESSION["user_id"];
 
 // Fetch character details
-$stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
+$stmt = $pdo->prepare("SELECT a.*, c.name as class_name FROM adventurers a JOIN class_library c ON a.class_id = c.id WHERE a.user_id = ?");
 $stmt->execute([$user_id]);
 $adv = $stmt->fetch();
+$adv_id = $adv['id'];
+
+// Fetch stats
+$stmt = $pdo->prepare("SELECT * FROM adventurer_stats WHERE adventurer_id = ?");
+$stmt->execute([$adv_id]);
+$stats = $stmt->fetch();
 
 // Fetch skills
-$stmt = $pdo->prepare("SELECT * FROM character_skills WHERE user_id = ?");
-$stmt->execute([$user_id]);
+$stmt = $pdo->prepare("SELECT sl.name as skill_name, cs.level FROM adventurer_skills cs JOIN skill_library sl ON cs.skill_id = sl.id WHERE cs.adventurer_id = ?");
+$stmt->execute([$adv_id]);
 $skills = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -37,19 +43,19 @@ $skills = $stmt->fetchAll();
 <body class="bg-dark text-light p-3">
     <div class="sheet-card">
         <h2 class="text-center text-warning"><?= htmlspecialchars($adv['name']) ?></h2>
-        <p class="text-center text-secondary mb-4"><?= htmlspecialchars($adv['class']) ?></p>
+        <p class="text-center text-secondary mb-4"><?= htmlspecialchars($adv['class_name']) ?></p>
         
         <div class="row">
             <div class="col-12">
                 <h4 class="text-warning">S.P.E.C.I.A.L. Stats</h4>
                 <div class="row row-cols-2 g-2">
-                    <div class="col"><div class="stat-box">Str: <?= $adv['strength'] ?></div></div>
-                    <div class="col"><div class="stat-box">Per: <?= $adv['perception'] ?></div></div>
-                    <div class="col"><div class="stat-box">End: <?= $adv['endurance'] ?></div></div>
-                    <div class="col"><div class="stat-box">Cha: <?= $adv['charisma'] ?></div></div>
-                    <div class="col"><div class="stat-box">Int: <?= $adv['intelligence'] ?></div></div>
-                    <div class="col"><div class="stat-box">Agi: <?= $adv['agility'] ?></div></div>
-                    <div class="col"><div class="stat-box">Lck: <?= $adv['luck'] ?></div></div>
+                    <div class="col"><div class="stat-box">Str: <?= $stats['strength'] ?></div></div>
+                    <div class="col"><div class="stat-box">Per: <?= $stats['perception'] ?></div></div>
+                    <div class="col"><div class="stat-box">End: <?= $stats['endurance'] ?></div></div>
+                    <div class="col"><div class="stat-box">Cha: <?= $stats['charisma'] ?></div></div>
+                    <div class="col"><div class="stat-box">Int: <?= $stats['intelligence'] ?></div></div>
+                    <div class="col"><div class="stat-box">Agi: <?= $stats['agility'] ?></div></div>
+                    <div class="col"><div class="stat-box">Lck: <?= $stats['luck'] ?></div></div>
                 </div>
             </div>
             

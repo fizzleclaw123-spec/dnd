@@ -10,7 +10,7 @@ if (!isset($_SESSION["user_id"])) {
 $user_id = $_SESSION["user_id"];
 
 // Check if adventurer exists AND is complete
-$stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
+$stmt = $pdo->prepare("SELECT a.name, c.name as class, a.is_complete, s.strength, s.perception, s.endurance, s.charisma, s.intelligence, s.agility, s.luck FROM adventurers a LEFT JOIN class_library c ON a.class_id = c.id LEFT JOIN adventurer_stats s ON a.id = s.adventurer_id WHERE a.user_id = ?");
 $stmt->execute([$user_id]);
 $adventurer = $stmt->fetch();
 

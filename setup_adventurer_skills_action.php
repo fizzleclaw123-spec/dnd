@@ -15,6 +15,10 @@ if ($total_spent != 40) {
     exit;
 }
 
+$stmt = $pdo->prepare("SELECT id FROM adventurers WHERE user_id = ?");
+$stmt->execute([$_SESSION["user_id"]]);
+$adv = $stmt->fetch();
+$_SESSION['adventurer_id'] = $adv['id'];
 $_SESSION["skills"] = $_POST["skills"];
 header("Location: setup_adventurer_review.php");
 exit;

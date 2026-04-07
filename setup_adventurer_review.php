@@ -3,7 +3,7 @@ session_start();
 require 'db.php';
 
 $user_id = $_SESSION["user_id"];
-$stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
+$stmt = $pdo->prepare("SELECT a.name, c.name as class, s.strength, s.perception, s.endurance, s.charisma, s.intelligence, s.agility, s.luck FROM adventurers a LEFT JOIN class_library c ON a.class_id = c.id LEFT JOIN adventurer_stats s ON a.id = s.adventurer_id WHERE a.user_id = ?");
 $stmt->execute([$user_id]);
 $adv = $stmt->fetch();
 
@@ -11,8 +11,8 @@ $adv = $stmt->fetch();
 if (isset($_SESSION["skills"])) {
     $existing_skills = $_SESSION["skills"];
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM character_skills WHERE user_id = ?");
-    $stmt->execute([$user_id]);
+    $stmt = $pdo->prepare("SELECT sl.name as skill_name, cs.level FROM adventurer_skills cs JOIN skill_library sl ON cs.skill_id = sl.id WHERE cs.adventurer_id = ?");
+    $stmt->execute([$_SESSION['adventurer_id']]);
     $existing_skills = [];
     while ($row = $stmt->fetch()) {
         $existing_skills[$row['skill_name']] = $row['level'];
@@ -35,10 +35,20 @@ if (isset($_SESSION["skills"])) {
 <body>
     <div class="setup-card shadow-lg text-light">
         <h2 class="text-center text-warning mb-4">Review Your Adventurer</h2>
-        <div class="mb-3">
+        <div class="mb-4">
             <p class="mb-1"><strong>Name:</strong> <?= htmlspecialchars($adv['name']) ?> <a href="setup_adventurer.php" class="text-warning small">(Edit)</a></p>
             <p class="mb-1"><strong>Class:</strong> <?= htmlspecialchars($adv['class']) ?> <a href="setup_adventurer_class.php" class="text-warning small">(Edit)</a></p>
-            <p class="mb-1"><strong>Stats:</strong> Str: <?= $adv['strength'] ?>, Per: <?= $adv['perception'] ?>, End: <?= $adv['endurance'] ?>, Cha: <?= $adv['charisma'] ?>, Int: <?= $adv['intelligence'] ?>, Agi: <?= $adv['agility'] ?>, Lck: <?= $adv['luck'] ?> <a href="setup_adventurer_stats.php" class="text-warning small">(Edit)</a></p>
+        </div>
+
+        <div class="mb-4">
+            <p class="mb-2"><strong>Stats:</strong> <a href="setup_adventurer_stats.php" class="text-warning small">(Edit)</a></p>
+            <div class="row row-cols-3 g-2">
+                <?php 
+                $stats = ['Str'=>$adv['strength'], 'Per'=>$adv['perception'], 'End'=>$adv['endurance'], 'Cha'=>$adv['charisma'], 'Int'=>$adv['intelligence'], 'Agi'=>$adv['agility'], 'Lck'=>$adv['luck']];
+                foreach ($stats as $key => $val): ?>
+                    <div class="col"><div class="bg-dark p-1 rounded text-center small"><?= $key ?>: <?= $val ?></div></div>
+                <?php endforeach; ?>
+            </div>
         </div>
         
         <p class="mb-2"><strong>Skills:</strong> <a href="setup_adventurer_skills.php" class="text-warning small">(Edit)</a></p>
@@ -48,7 +58,8 @@ if (isset($_SESSION["skills"])) {
             <?php endif; endforeach; ?>
         </ul>
         
-        <form action="setup_adventurer_finalize.php" method="POST">
+<form action="setup_adventurer_finalize.php" method="POST">
+            <input type="hidden" name="action" value="finalize">
             <button type="submit" class="btn btn-dnd w-100 fw-bold">Confirm and Start Adventure!</button>
             <a href="setup_adventurer_skills.php" class="btn btn-outline-secondary w-100 mt-2">Back</a>
         </form>

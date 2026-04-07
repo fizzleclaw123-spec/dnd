@@ -8,8 +8,8 @@ $existing_skills = [];
 if (isset($_SESSION["skills"])) {
     $existing_skills = $_SESSION["skills"];
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM character_skills WHERE user_id = ?");
-    $stmt->execute([$user_id]);
+    $stmt = $pdo->prepare("SELECT sl.name as skill_name, cs.level FROM adventurer_skills cs JOIN skill_library sl ON cs.skill_id = sl.id WHERE cs.adventurer_id = ?");
+    $stmt->execute([$_SESSION['adventurer_id']]);
     while ($row = $stmt->fetch()) {
         $existing_skills[$row['skill_name']] = $row['level'];
     }

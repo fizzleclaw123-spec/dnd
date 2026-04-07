@@ -3,18 +3,23 @@ session_start();
 require 'db.php';
 
 $user_id = $_SESSION["user_id"];
-$stmt = $pdo->prepare("SELECT * FROM adventurers WHERE user_id = ?");
+$stmt = $pdo->prepare("SELECT id FROM adventurers WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $adv = $stmt->fetch();
+$_SESSION['adventurer_id'] = $adv['id'];
+
+$stmt = $pdo->prepare("SELECT s.* FROM adventurer_stats s WHERE s.adventurer_id = ?");
+$stmt->execute([$_SESSION['adventurer_id']]);
+$adv_stats = $stmt->fetch();
 
 $current_stats = [
-    'Strength' => $adv['strength'] ?? 4,
-    'Perception' => $adv['perception'] ?? 4,
-    'Endurance' => $adv['endurance'] ?? 4,
-    'Charisma' => $adv['charisma'] ?? 4,
-    'Intelligence' => $adv['intelligence'] ?? 4,
-    'Agility' => $adv['agility'] ?? 4,
-    'Luck' => $adv['luck'] ?? 4
+    'Strength' => $adv_stats['strength'] ?? 4,
+    'Perception' => $adv_stats['perception'] ?? 4,
+    'Endurance' => $adv_stats['endurance'] ?? 4,
+    'Charisma' => $adv_stats['charisma'] ?? 4,
+    'Intelligence' => $adv_stats['intelligence'] ?? 4,
+    'Agility' => $adv_stats['agility'] ?? 4,
+    'Luck' => $adv_stats['luck'] ?? 4
 ];
 ?>
 <!DOCTYPE html>

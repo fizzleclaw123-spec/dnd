@@ -2,7 +2,7 @@
 session_start();
 require 'db.php';
 
-$stmt = $pdo->prepare("SELECT class FROM adventurers WHERE user_id = ?");
+$stmt = $pdo->prepare("SELECT c.name as class FROM adventurers a LEFT JOIN class_library c ON a.class_id = c.id WHERE a.user_id = ?");
 $stmt->execute([$_SESSION["user_id"]]);
 $adv = $stmt->fetch();
 $selected_class = $adv ? $adv['class'] : '';

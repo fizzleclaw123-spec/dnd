@@ -16,7 +16,7 @@ $stmt = $pdo->prepare("UPDATE adventures SET status = 'active' WHERE id = ?");
 $stmt->execute([$adventure_id]);
 
 // Get ALL party member details
-$stmt = $pdo->prepare("SELECT a.name, a.class FROM adventurers a JOIN adventure_members am ON a.id = am.adventurer_id WHERE am.adventure_id = ?");
+$stmt = $pdo->prepare("SELECT a.name, c.name as class FROM adventurers a JOIN adventure_members am ON a.id = am.adventurer_id JOIN class_library c ON a.class_id = c.id WHERE am.adventure_id = ?");
 $stmt->execute([$adventure_id]);
 $party_members = $stmt->fetchAll();
 

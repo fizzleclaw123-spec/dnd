@@ -1,5 +1,7 @@
 dnd.db
+dnd.db.bak
+migration.sql
+migration_class.sql
 vendor/
 .env.php
 config.php
-dnd.db

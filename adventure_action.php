@@ -13,15 +13,16 @@ $adventure_id = $_GET["id"] ?? $_SESSION["active_adventure_id"];
 $player_action = $_POST["action"];
 
 // Get character info
-$stmt = $pdo->prepare("SELECT name, class, strength, perception, endurance, charisma, intelligence, agility FROM adventurers WHERE user_id = ?");
+$stmt = $pdo->prepare("SELECT a.name, c.name as class, s.strength, s.perception, s.endurance, s.charisma, s.intelligence, s.agility, s.luck FROM adventurers a LEFT JOIN class_library c ON a.class_id = c.id LEFT JOIN adventurer_stats s ON a.id = s.adventurer_id WHERE a.user_id = ?");
 $stmt->execute([$user_id]);
 $adv = $stmt->fetch();
 
-$stats = "Stats: Strength: {$adv['strength']}, Perception: {$adv['perception']}, Endurance: {$adv['endurance']}, Int: {$adv['intelligence']}, Cha: {$adv['charisma']}, Agility: {$adv['agility']}. ";
+$stats = "Stats: Strength: {$adv['strength']}, Perception: {$adv['perception']}, Endurance: {$adv['endurance']}, Int: {$adv['intelligence']}, Cha: {$adv['charisma']}, Agility: {$adv['agility']}, Luck: {$adv['luck']}. ";
 
 // Get ALL party member details for the prompt context
-$stmt = $pdo->prepare("SELECT a.name, a.class FROM adventurers a 
+$stmt = $pdo->prepare("SELECT a.name, c.name as class FROM adventurers a 
                        JOIN adventure_members am ON a.id = am.adventurer_id 
+                       JOIN class_library c ON a.class_id = c.id
                        WHERE am.adventure_id = ?");
 $stmt->execute([$adventure_id]);
 $party = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -35,7 +36,7 @@ $party_desc = rtrim($party_desc, ", ");
 // Get context - FILTER BY adventure_id
 $stmt = $pdo->prepare("SELECT al.user_id, a.name as char_name, al.player_action, al.dm_narration 
                        FROM adventure_logs al 
-                       LEFT JOIN adventurers a ON al.user_id = a.user_id
+                       LEFT JOIN adventurers a ON al.user_id = a.id
                        WHERE al.adventure_id = ? 
                        ORDER BY al.turn_number DESC LIMIT 5");
 $stmt->execute([$adventure_id]);
