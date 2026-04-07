@@ -51,13 +51,13 @@ foreach (array_reverse($history) as $h) {
 }
 
 $prompt = $context . " Player {$adv['name']} action: $player_action. 
-            Describe the DM response, maintaining focus on the party's interactions. 
+            Describe the DM response, maintaining focus on the party's interactions, personalities, and class skills. 
+            Write in a rich, descriptive D&D narrative style that addresses all party members involved in the scene by name. 
             CRITICAL: For ANY action, if there is a chance of failure, calculate the d20+stat roll vs DC.
             YOU MUST FORMAT THE MECHANICS AT THE VERY BEGINNING OF YOUR RESPONSE LIKE THIS EXACTLY: 
             [ROLL: Action/Stat/DC: Result, Status] 
             Example: [ROLL: Disarm/Agility/15: 18, Success]
-            Follow this immediately with your narrative text. 
-            If failure, narrate the failure and its consequences. Be fair but firm.";
+            Follow this immediately with your detailed narrative text.";
 
 // Call Gemini API
 $payload = json_encode([

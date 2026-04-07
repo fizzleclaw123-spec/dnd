@@ -27,9 +27,9 @@ foreach ($party_members as $member) {
 $party_desc = rtrim($party_desc, ", ");
 
 // Generate initial greeting via Gemini
-$context = "You are a Dungeon Master for a collaborative D&D adventure party consisting of: {$party_desc}. Start the adventure with an engaging opening scene that incorporates this party. Keep it concise. Provide a short, 2-3 word title for the adventure. 
+$context = "You are a Dungeon Master for a collaborative D&D adventure party consisting of: {$party_desc}. Start the adventure with an engaging, detailed opening scene that incorporates this party. Provide a short, 2-3 word title for the adventure. 
             Format your response exactly as: TITLE: [Title]
-            NARRATION: [Narration]";
+            NARRATION: [Narration (with paragraph breaks)]";
 $payload = json_encode(['contents' => [['parts' => [['text' => $context]]]]]);
 
 $ch = curl_init(API_BASE_URL . '?key=' . API_KEY);
