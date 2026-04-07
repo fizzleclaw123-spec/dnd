@@ -27,7 +27,9 @@ foreach ($party_members as $member) {
 $party_desc = rtrim($party_desc, ", ");
 
 // Generate initial greeting via Gemini
-$context = "You are a Dungeon Master for a D&D adventure. Party: {$party_desc}. Start the adventure with an engaging opening scene that incorporates this party.";
+$context = "You are a Dungeon Master for a collaborative D&D adventure party consisting of: {$party_desc}. Start the adventure with an engaging opening scene that incorporates this party. Keep it concise. Provide a short, 2-3 word title for the adventure. 
+            Format your response exactly as: TITLE: [Title]
+            NARRATION: [Narration]";
 $payload = json_encode(['contents' => [['parts' => [['text' => $context]]]]]);
 
 $ch = curl_init(API_BASE_URL . '?key=' . API_KEY);
@@ -35,24 +37,23 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 $response = curl_exec($ch);
 curl_close($ch);
 
 $data = json_decode($response, true);
-$initial_narration = $data['candidates'][0]['content']['parts'][0]['text'] ?? "Your adventure begins...";
+$raw_response = $data['candidates'][0]['content']['parts'][0]['text'] ?? "TITLE: New Adventure\nNARRATION: Your adventure begins...";
 
-// NEW: Try to extract a title from the DM narration
-$context_title = "Given this D&D adventure opening, provide a short, 2-3 word title for the adventure. Output ONLY the title. Text: " . substr($initial_narration, 0, 500);
-$payload_title = json_encode(['contents' => [['parts' => [['text' => $context_title]]]]]);
-$ch_title = curl_init(API_BASE_URL . '?key=' . API_KEY);
-curl_setopt($ch_title, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch_title, CURLOPT_POST, true);
-curl_setopt($ch_title, CURLOPT_POSTFIELDS, $payload_title);
-curl_setopt($ch_title, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-$response_title = curl_exec($ch_title);
-curl_close($ch_title);
-$data_title = json_decode($response_title, true);
-$adventure_title = $data_title['candidates'][0]['content']['parts'][0]['text'] ?? "New Adventure";
+// Parse Title and Narration
+if (preg_match('/TITLE: (.*?)\nNARRATION: (.*)/s', $raw_response, $matches)) {
+    $adventure_title = trim($matches[1]);
+    $initial_narration = trim($matches[2]);
+} else {
+    $adventure_title = "New Adventure";
+    $initial_narration = $raw_response;
+}
 
 // Update adventure status AND name
 $stmt = $pdo->prepare("UPDATE adventures SET status = 'active', name = ? WHERE id = ?");
