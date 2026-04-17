@@ -27,9 +27,13 @@ foreach ($party_members as $member) {
 $party_desc = rtrim($party_desc, ", ");
 
 // Generate initial greeting via Gemini
-$context = "You are a Dungeon Master for a collaborative D&D adventure party consisting of: {$party_desc}. Start the adventure with an engaging, detailed opening scene that incorporates this party. Provide a short, 2-3 word title for the adventure. 
-            Format your response exactly as: TITLE: [Title]
-            NARRATION: [Narration (with paragraph breaks)]";
+$context = "You are a Dungeon Master for a collaborative D&D adventure party consisting of: {$party_desc}. 
+            Start the adventure with an engaging, detailed opening scene. 
+            Include paragraph breaks for better readability.
+            
+            Format your response exactly using these two headers:
+            TITLE: [Title]
+            NARRATION: [Narration content here...]";
 $payload = json_encode(['contents' => [['parts' => [['text' => $context]]]]]);
 
 $ch = curl_init(API_BASE_URL . '?key=' . API_KEY);
@@ -47,12 +51,12 @@ $data = json_decode($response, true);
 $raw_response = $data['candidates'][0]['content']['parts'][0]['text'] ?? "TITLE: New Adventure\nNARRATION: Your adventure begins...";
 
 // Parse Title and Narration
-if (preg_match('/TITLE: (.*?)\nNARRATION: (.*)/s', $raw_response, $matches)) {
+$adventure_title = "New Adventure";
+$initial_narration = $raw_response;
+
+if (preg_match('/TITLE:\s*(.*?)\s*NARRATION:\s*(.*)/is', $raw_response, $matches)) {
     $adventure_title = trim($matches[1]);
     $initial_narration = trim($matches[2]);
-} else {
-    $adventure_title = "New Adventure";
-    $initial_narration = $raw_response;
 }
 
 // Update adventure status AND name
