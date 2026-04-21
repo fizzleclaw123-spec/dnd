@@ -153,7 +153,8 @@ $logs = $stmt->fetchAll();
         <div class="input-area">
             <form action="adventure_action.php?id=<?= $adventure_id ?>" method="POST" id="actionForm">
                 <div class="input-group">
-                    <input type="text" name="action" class="form-control bg-dark text-white border-secondary" placeholder="What do you do?" required>
+                    <input type="text" name="action" class="form-control bg-dark text-white border-secondary" placeholder="What do you do?" id="actionInput">
+                    <button type="submit" name="action" value="Skip" class="btn btn-outline-secondary" onclick="document.getElementById('actionInput').required = false;">Skip</button>
                     <button type="submit" class="btn btn-dnd" id="submitBtn">Submit</button>
                 </div>
             </form>
