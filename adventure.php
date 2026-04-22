@@ -80,48 +80,66 @@ $logs = $stmt->fetchAll();
                     $player_name = $name_stmt->fetchColumn() ?: "Adventurer";
                     
                     // Split the mechanics (if present in brackets) from the narration
-                    $narration = $log['dm_narration'];
+                    $narration = $log['dm_narration'] ?? '';
                     $roll_info = "";
                     if (preg_match('/^\[ROLL: (.*?)\]/', $narration, $matches)) {
                         $roll_info = $matches[1];
                         $narration = trim(substr($narration, strlen($matches[0])));
                     }
                 ?>
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="mb-1">
                         <p class="player-text mb-0">> <?= htmlspecialchars($player_name) ?>: <?= htmlspecialchars($log['player_action']) ?></p>
-                        <button class="btn btn-sm btn-outline-warning" onclick="speakText(this, `<?= htmlspecialchars(addslashes(str_replace(['<br />', '<br>'], ' ', $narration))) ?>`)">🔊 Listen</button>
                     </div>
                     
-                    <?php if ($roll_info): 
-                        // Logic to determine badge color: Success vs Fail
-                        $is_success = (strpos(strtolower($roll_info), 'success') !== false);
-                        $badge_class = $is_success ? "btn-outline-success" : "btn-outline-danger";
-                        $badge_text = $is_success ? "Success" : "Failure";
+                    <?php 
+                    // Detect if there are mechanics in the narration
+                    $narration_display = $narration;
+                    $inline_roll_info = [];
+                    
+                    // Check narration for roll info
+                    if (preg_match_all('/\[ROLL: (.*?)\]/', $narration, $matches)) {
+                        $inline_roll_info = array_merge($inline_roll_info, $matches[1]);
+                        $narration_display = preg_replace('/\[ROLL: (.*?)\]/', '', $narration);
+                    }
+                    
+                    // Check player action for roll info
+                    if (preg_match_all('/\[ROLL: (.*?)\]/', $log['player_action'], $matches)) {
+                        $inline_roll_info = array_merge($inline_roll_info, $matches[1]);
+                    }
+                    ?>
+                    
+                    <?php if (!empty($inline_roll_info)): 
+                        foreach ($inline_roll_info as $roll):
+                            $is_success = (strpos(strtolower($roll), 'success') !== false);
+                            $badge_class = $is_success ? "btn-outline-success" : "btn-outline-danger";
+                            $badge_text = $is_success ? "Success" : "Failure";
                     ?>
                         <div class="mb-2">
-                            <button class="btn btn-sm <?= $badge_class ?>" type="button" data-bs-toggle="collapse" data-bs-target="#roll-<?= $log['id'] ?>">
+                            <button class="btn btn-sm <?= $badge_class ?>" type="button" data-bs-toggle="collapse" data-bs-target="#roll-<?= $log['id'] ?>-<?= md5($roll) ?>">
                                 <?= $badge_text ?> (Details)
                             </button>
-                            <div class="collapse mt-2" id="roll-<?= $log['id'] ?>">
+                            <div class="collapse mt-2" id="roll-<?= $log['id'] ?>-<?= md5($roll) ?>">
                                 <div class="card card-body bg-dark text-white border-secondary">
-                                    <code><?= htmlspecialchars($roll_info) ?></code>
+                                    <code><?= htmlspecialchars($roll) ?></code>
                                 </div>
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php endforeach; endif; ?>
 
                     <?php if ($isLast): ?>
-                        <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="dm-text" id="dm-text-<?= $log['id'] ?>"></p>
+                        </div>
                         <button id="skip-btn-<?= $log['id'] ?>" class="btn btn-sm btn-outline-secondary mt-1" onclick="skip(<?= $log['id'] ?>)">Skip</button>
                         <script>
                             function skip(id) {
-                                document.getElementById('dm-text-'+id).innerHTML = `<?= str_replace(["\r", "\n"], ['<br>', '<br>'], htmlspecialchars_decode(strip_tags($narration, '<br>'))) ?>`;
+                                document.getElementById('dm-text-'+id).innerHTML = `<?= str_replace(["\r", "\n"], ['<br>', '<br>'], htmlspecialchars_decode(strip_tags((string)$narration_display, '<br>'))) ?>`;
                                 document.getElementById('skip-btn-'+id).style.display = 'none';
                                 window['stop_'+id] = true;
                             }
                             (function() {
                                 const id = <?= $log['id'] ?>;
-                                const text = `<?= str_replace(["\r", "\n"], ['\n', '\n'], htmlspecialchars_decode(strip_tags($narration))) ?>`;
+                                const text = `<?= str_replace(["\r", "\n"], ['\n', '\n'], htmlspecialchars_decode(strip_tags((string)$narration_display))) ?>`;
                                 const el = document.getElementById('dm-text-'+id);
                                 let i = 0;
                                 function type() {
@@ -144,7 +162,9 @@ $logs = $stmt->fetchAll();
                             })();
                         </script>
                     <?php else: ?>
-                        <p class="dm-text"><?= nl2br(htmlspecialchars($narration)) ?></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="dm-text mb-0"><?= nl2br(htmlspecialchars((string)$narration_display)) ?></p>
+                        </div>
                     <?php endif; ?>
                     <hr class="border-secondary">
                 <?php endforeach; ?>
