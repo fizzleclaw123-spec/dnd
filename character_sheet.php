@@ -42,25 +42,25 @@ $skills = $stmt->fetchAll();
 </head>
 <body class="bg-dark text-light p-3">
     <div class="sheet-card">
-        <h2 class="text-center text-warning"><?= htmlspecialchars($adv['name']) ?></h2>
+        <h2 class="text-center text-warning">🛡️ <?= htmlspecialchars($adv['name']) ?></h2>
         <p class="text-center text-secondary mb-4"><?= htmlspecialchars($adv['class_name']) ?></p>
         
         <div class="row">
             <div class="col-12">
-                <h4 class="text-warning">S.P.E.C.I.A.L. Stats</h4>
+                <h4 class="text-warning">📊 S.P.E.C.I.A.L. Stats</h4>
                 <div class="row row-cols-2 g-2">
-                    <div class="col"><div class="stat-box">Str: <?= $stats['strength'] ?></div></div>
-                    <div class="col"><div class="stat-box">Per: <?= $stats['perception'] ?></div></div>
-                    <div class="col"><div class="stat-box">End: <?= $stats['endurance'] ?></div></div>
-                    <div class="col"><div class="stat-box">Cha: <?= $stats['charisma'] ?></div></div>
-                    <div class="col"><div class="stat-box">Int: <?= $stats['intelligence'] ?></div></div>
-                    <div class="col"><div class="stat-box">Agi: <?= $stats['agility'] ?></div></div>
-                    <div class="col"><div class="stat-box">Lck: <?= $stats['luck'] ?></div></div>
+                    <div class="col"><div class="stat-box">💪 Str: <?= $stats['strength'] ?></div></div>
+                    <div class="col"><div class="stat-box">👁️ Per: <?= $stats['perception'] ?></div></div>
+                    <div class="col"><div class="stat-box">🛡️ End: <?= $stats['endurance'] ?></div></div>
+                    <div class="col"><div class="stat-box">✨ Cha: <?= $stats['charisma'] ?></div></div>
+                    <div class="col"><div class="stat-box">🧠 Int: <?= $stats['intelligence'] ?></div></div>
+                    <div class="col"><div class="stat-box">⚡ Agi: <?= $stats['agility'] ?></div></div>
+                    <div class="col"><div class="stat-box">🍀 Lck: <?= $stats['luck'] ?></div></div>
                 </div>
             </div>
             
             <div class="col-12 mt-4">
-                <h4 class="text-warning">Skills</h4>
+                <h4 class="text-warning">📜 Skills</h4>
                 <div class="stat-box">
                     <?php foreach($skills as $skill): ?>
                         <div class="d-flex justify-content-between border-bottom border-secondary py-1">
@@ -72,7 +72,7 @@ $skills = $stmt->fetchAll();
             </div>
         </div>
         
-        <a href="dashboard.php" class="btn btn-dnd mt-4">Back to Dashboard</a>
+        <a href="dashboard.php" class="btn btn-dnd mt-4">🏠 Back to Dashboard</a>
     </div>
 </body>
 </html>
