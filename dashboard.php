@@ -60,18 +60,18 @@ $prog = $stmt->fetch();
 </head>
 <body class="bg-dark text-light d-flex justify-content-center align-items-center py-4">
     <div class="container text-center">
-        <h1 class="text-warning mb-4">Welcome, Adventurer!</h1>
+        <h1 class="text-warning mb-4">⚔️ Welcome, Adventurer! 🛡️</h1>
         <div class="card mx-auto">
-            <h3 class="mb-3 text-warning">Progression</h3>
+            <h3 class="mb-3 text-warning">📜 Progression</h3>
             <div class="d-flex flex-column mb-4">
-                <p class="prog-row"><strong>Level:</strong> <?= htmlspecialchars($prog['level']) ?></p>
-                <p class="prog-row"><strong>XP:</strong> <?= htmlspecialchars($prog['xp']) ?></p>
-                <p class="prog-row"><strong>Skill Points:</strong> <?= htmlspecialchars($prog['skill_points']) ?></p>
+                <p class="prog-row"><strong>⭐ Level:</strong> <?= htmlspecialchars($prog['level']) ?></p>
+                <p class="prog-row"><strong>✨ XP:</strong> <?= htmlspecialchars($prog['xp']) ?></p>
+                <p class="prog-row"><strong>💎 Skill Points:</strong> <?= htmlspecialchars($prog['skill_points']) ?></p>
             </div>
             <div class="d-grid gap-2">
-                <a href="character_sheet.php" class="btn btn-dnd">View Character Sheet</a>
-                <a href="create_adventure.php" class="btn btn-dnd">Create Adventure</a>
-                <h4 class="text-warning mt-4">My Adventures</h4>
+                <a href="character_sheet.php" class="btn btn-dnd">📄 View Character Sheet</a>
+                <a href="create_adventure.php" class="btn btn-dnd">🗺️ Create Adventure</a>
+                <h4 class="text-warning mt-4">🎒 My Adventures</h4>
                 <div id="my-adventures">
                 <?php
                 $stmt = $pdo->prepare("SELECT a.* FROM adventures a 
@@ -83,8 +83,8 @@ $prog = $stmt->fetch();
                 if (count($my_adventures) > 0) {
                     foreach ($my_adventures as $adv) {
                         echo '<div class="card mb-2" style="background: #3d3d3d; padding: 10px;">';
-                        echo '<strong>' . htmlspecialchars($adv['name']) . '</strong> (' . htmlspecialchars($adv['type']) . ')<br>';
-                        echo '<small>Status: ' . htmlspecialchars($adv['status']) . '</small><br>';
+                        echo '<strong>' . htmlspecialchars($adv['name']) . '</strong> ' . ($adv['type'] == 'solo' ? '👤' : '👥') . ' (' . htmlspecialchars($adv['type']) . ')<br>';
+                        echo '<small>Status: ' . ($adv['status'] === 'lobby' ? '⏳ ' : '⚔️ ') . htmlspecialchars($adv['status']) . '</small><br>';
                         
                         if ($adv['status'] === 'lobby') {
                             echo '<a href="lobby.php?id=' . $adv['id'] . '" class="btn btn-sm btn-outline-warning mt-2">Enter Lobby</a> ';
@@ -103,7 +103,7 @@ $prog = $stmt->fetch();
                 ?>
                 </div>
 
-                <h4 class="text-warning mt-4">Join Multiplayer Adventure</h4>
+                <h4 class="text-warning mt-4">🤝 Join Multiplayer Adventure</h4>
                 <div id="join-adventures">
                 <?php
                 $stmt = $pdo->prepare("SELECT a.* FROM adventures a 
@@ -138,7 +138,7 @@ $prog = $stmt->fetch();
                     setInterval(refreshAdventureLists, 3000);
                 </script>
                 
-                <a href="logout.php" class="btn btn-outline-secondary mt-3">Logout</a>
+                <a href="logout.php" class="btn btn-outline-secondary mt-3">🚪 Logout</a>
             </div>
         </div>
     </div>
